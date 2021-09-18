@@ -33,7 +33,7 @@ AuthCompanion aims to satisfy the most common identity and user management needs
 for single factor authentication. It can:
 
 - Securely handle user registration, login, logout, and account recovery.
-- Generate and validate [JWTs](https://jwt.io/) desinged for authenticating
+- Generate and validate [JWTs](https://jwt.io/) designed for authenticating
   users into your application APIs.
 
 ## Get Started
