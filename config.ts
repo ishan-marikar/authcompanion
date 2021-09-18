@@ -25,8 +25,7 @@ const DBPORT = Deno.env.get("DB_PORT");
 const DBCONNECTIONS = Deno.env.get("MAX_DB_CONNECTIONS");
 
 //JWT related environment variables
-const ACCESSTOKENKEY = Deno.env.get("ACCESS_TOKEN_KEY");
-const REFRESHTOKENKEY = Deno.env.get("REFRESH_TOKEN_KEY");
+const KEYPATH = Deno.env.get("KEY_PATH");
 
 //Logging related environment variables
 //Log level
@@ -67,8 +66,7 @@ export default {
   DBPASSWORD,
   DBPORT,
   DBCONNECTIONS,
-  ACCESSTOKENKEY,
-  REFRESHTOKENKEY,
+  KEYPATH,
   LOGLEVEL,
   LOGHANDLER,
   SMTPHOSTNAME,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Status } from "../deps.ts";
 import { hash } from "../deps.ts";
 import { v4 } from "../deps.ts";

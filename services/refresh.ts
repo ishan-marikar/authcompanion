@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Status } from "../deps.ts";
 import {
   makeAccesstoken,
@@ -9,7 +10,7 @@ import log from "../helpers/log.ts";
 
 export const refresh = async (ctx: any) => {
   try {
-    const refreshToken = ctx.cookies.get("refreshToken");
+    const refreshToken = await ctx.cookies.get("refreshToken");
 
     if (!refreshToken) {
       ctx.throw(Status.BadRequest, "No Refresh Token Found");
@@ -21,7 +22,7 @@ export const refresh = async (ctx: any) => {
       const userObj = await db.queryObject({
         text:
           `SELECT name, email, "uuid", refresh_token, active, created_at, updated_at FROM users WHERE refresh_token = $1;`,
-        args: [validatedjwt?.payload.jti],
+        args: [validatedjwt?.jti],
         fields: [
           "name",
           "email",

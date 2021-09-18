@@ -20,7 +20,7 @@
      <img alt="GitHub license" src="https://img.shields.io/github/license/pmprosociety/authcompanion" />
    </a>
    <a href="https://deno.land">
-     <img src="https://img.shields.io/badge/deno-1.11.1-green?logo=deno"/>
+     <img src="https://img.shields.io/badge/deno-1.14.0-green?logo=deno"/>
    </a>
 
 </div>
@@ -33,7 +33,8 @@ AuthCompanion aims to satisfy the most common identity and user management needs
 for single factor authentication. It can:
 
 - Securely handle user registration, login, logout, and account recovery.
--  Generate and validate [JWTs](https://jwt.io/) desinged for authenticating users into your application APIs. 
+- Generate and validate [JWTs](https://jwt.io/) desinged for authenticating
+  users into your application APIs.
 
 ## Get Started
 
@@ -62,7 +63,10 @@ $ docker-compose up
 ---
 
 ### 1. Create a user
-AuthC comes with a number of pre-built [Web Forms](#web-forms-for-authentication) to help you quickly integrate user auth into your web application. 
+
+AuthC comes with a number of pre-built
+[Web Forms](#web-forms-for-authentication) to help you quickly integrate user
+auth into your web application.
 
 Start first with registering an account using this web form:
 http://localhost:3002/client/v1/register
@@ -72,11 +76,12 @@ registering, that's OK! We can change this later to point to your application.
 
 ### 2. Login as a user
 
-Next, log in with the account you just created using your email and password at this web form:
-http://localhost:3002/client/v1/login
+Next, log in with the account you just created using your email and password at
+this web form: http://localhost:3002/client/v1/login
 
-
-Lastly, check out the [Authentication API](#authentication-api) for how your application can manage users and see the documentation below for clear examples 🚀.
+Lastly, check out the [Authentication API](#authentication-api) for how your
+application can manage users and see the documentation below for clear examples
+🚀.
 
 ---
 
@@ -86,14 +91,16 @@ Lastly, check out the [Authentication API](#authentication-api) for how your app
   in with their credentials, register an account, update their profile, and
   issue forgotten passwords.
 
-- [x] **Authentication API:** Control and mange user accounts and thier sessions via the RESTful Authentication API.
+- [x] **Authentication API:** Control and mange user accounts and thier sessions
+  via the RESTful Authentication API.
 
 - [x] **Profile and Credentials Management:** Update the password and profile
   information of your users - account information is stored in a Postgres
   database.
 
 - [x] **Account Recovery:** Restore a user's access to their account using the
-  **Forgot Password** flow which sends a special link via email for helping users quickly recovery their account.
+  **Forgot Password** flow which sends a special link via email for helping
+  users quickly recovery their account.
 
 - [x] **Hooks:** Receive notifications via a webhook after a user has: logged
   in, registered, or updated their account. Hooks are used to trigger your

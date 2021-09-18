@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Status } from "../deps.ts";
 import { hash } from "../deps.ts";
 import { v4 } from "../deps.ts";
@@ -71,6 +72,7 @@ export const registration = async (ctx: any) => {
     });
 
     let user = userObj.rows[0];
+
     const accessToken = await makeAccesstoken(userObj);
     const refreshToken = await makeRefreshtoken(userObj);
 

@@ -6,7 +6,7 @@
 # This workflow will install Deno and run tests across stable and nightly builds on Windows, Ubuntu and macOS.
 # For more information see: https://github.com/denolib/setup-deno
 
-name: AuthC Tests
+name: AuthC Integration Tests
 
 on:
   push:
@@ -51,7 +51,10 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@main
         with:
-          deno-version: "1.11.1" 
+          deno-version: "1.14.0" 
+
+      - name: Generate Keys
+        run: deno run -A --unstable generateKey.ts
 
       - name: Cache Dependencies
         run: deno cache --unstable deps.ts
@@ -67,8 +70,7 @@ jobs:
           DBPASSWORD: postgres
           DATABASE: postgres
           DBUSER: postgres
-          ACCESSTOKENKEY: testkeyplzignore
-          REFRESHTOKENKEY: testkeyplzignore
+          KEY_PATH: ./keyfile
           SECURE: false
 
       - name: Run Tests
@@ -79,7 +81,6 @@ jobs:
           DB_PASSWORD: postgres
           DATABASE: postgres
           DB_USER: postgres
-          ACCESS_TOKEN_KEY: testkeyplzignore
-          REFRESH_TOKEN_KEY: testkeyplzignore
+          KEY_PATH: ./keyfile
           SECURE: false
 

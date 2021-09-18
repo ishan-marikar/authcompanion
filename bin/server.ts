@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import app from "../app.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
@@ -20,16 +22,14 @@ app.addEventListener("listen", ({ secure, hostname, port }) => {
 
 const server = app.listen({ port: PORT, signal });
 
-// Listen for SigTerm (Docker shutdown) SigInt (CTRL-C) and SIGABRT.
+// Listen for SigTerm (Docker shutdown) SigInt (CTRL-C) and SIGABRT (Abort()).
 await Promise.any(
   [
-    Deno.signal(Deno.Signal.SIGTERM),
-    Deno.signal(Deno.Signal.SIGINT),
-    Deno.signal(Deno.Signal.SIGABRT),
+    Deno.signal("SIGTERM"),
+    Deno.signal("SIGINT"),
+    Deno.signal("SIGABRT"),
   ],
 );
-
-log.info(` 🛑 Stopping AuthCompanion`);
 
 // In order to close the sever...
 controller.abort();
@@ -37,6 +37,6 @@ controller.abort();
 // Listen will stop listening for requests and the promise will resolve...
 await server;
 
-log.info(` Good bye 👋`);
+log.info(`AuthCompanion has exited, Good bye 👋`);
 
 Deno.exit();

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Status } from "../deps.ts";
 import { makeRecoverytoken } from "../helpers/jwtutils.ts";
 import { db } from "../db/db.ts";

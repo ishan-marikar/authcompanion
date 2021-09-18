@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Status } from "../deps.ts";
 import { validateJWT } from "../helpers/jwtutils.ts";
 import log from "../helpers/log.ts";
@@ -18,7 +19,7 @@ export default async (ctx: any, next: any) => {
       ctx.throw(Status.Unauthorized, "Unauthorized");
     }
 
-    let { payload } = await validateJWT(userJWT);
+    const payload = await validateJWT(userJWT);
 
     ctx.state.JWTclaims = payload;
 
