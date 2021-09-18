@@ -41,12 +41,9 @@ services:
     container_name: authc-api
     env_file:
       - .env
-    image: authcompanion
     restart: always
     depends_on:
       - migrate
-    volumes:
-      - ./:/app
     ports:
       - 127.0.0.1:3002:3002
 
