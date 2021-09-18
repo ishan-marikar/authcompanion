@@ -41,7 +41,7 @@ for single factor authentication. It can:
 Start by downloading the source code or use git, to clone this repository
 
 ```sh
-$ git clone https://github.com/pmprosociety/authcompanion.git
+$ git clone https://github.com/authcompanion/authcompanion.git
 
 $ cd authcompanion/
 ```
