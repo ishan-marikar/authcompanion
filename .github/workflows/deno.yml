@@ -67,7 +67,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@main
         with:
-          deno-version: "1.14.0" 
+          deno-version: "1.15.3" 
 
       - name: Cache Dependencies
         run: deno cache --unstable deps.ts
