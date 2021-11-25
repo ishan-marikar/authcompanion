@@ -33,7 +33,7 @@ AuthCompanion aims to satisfy the most common identity and user management needs
 for single factor authentication. It can:
 
 - Securely handle user registration, login, logout, and account recovery.
-- Generate and validate [JWTs](https://jwt.io/) designed for authenticating
+- Generate and validate [JWTs](https://jwt.io/), a token designed for authenticating
   users into your application APIs.
 
 ## Get Started
@@ -61,6 +61,7 @@ $ docker-compose up
 ```
 
 ---
+## Explore
 
 ### 1. Create a user
 
@@ -87,35 +88,28 @@ application can manage users and see the documentation below for clear examples
 
 ## Features
 
-- [x] **Web Forms:** Use pre-built web forms for your application users to: log
+- [x] **Web Forms for User Auth:** Use pre-built and customizable web forms for your application users to: log
       in with their credentials, register an account, update their profile, and
       issue forgotten passwords.
 
-- [x] **Authentication API:** Control and mange user accounts and thier sessions
-      via the RESTful Authentication API.
-
-- [x] **Profile and Credentials Management:** Update the password and profile
+- [x] **Manage User Profiles and JWTs:** Update the password and profile
       information of your users - account information is stored in a Postgres
-      database.
+      database. Easily manage the life-cycle of your user's JWT used for authentication.
 
-- [x] **Account Recovery:** Restore a user's access to their account using the
+- [x] **User Account Recovery:** Restore a user's access to their account using the
       **Forgot Password** flow which sends a special link via email for helping
-      users quickly recovery their account.
-
-- [x] **Token Lifecycle & Logout:** Keep a user's access token fresh while they
-      are using your application. Then, when a user is done in your app,
-      securely log them out.
+      users quickly recover their account.
 
 The default AuthC server configuration strives to be reasonable and sane for
-gettings started with user authentication easily.
+getting started with user authentication easily.
 
 ## Web Forms for Authentication
 
 The web forms for login, registration and forgot password are built using
 [Vue.js](https://v3.vuejs.org/) and [Tailwindcss](https://tailwindcss.com/) -
 making them easily customizable for your specific branding and auth needs. After
-successful login or registration, the user's JWT is made available for
-developers to use when authenticating a user into other APIs.
+successful login or registration using the web forms, the user's JWT is made available for
+developers to use for authenticating a user into your web application APIs.
 
 |             Login Screen              |            Registration Screen             |
 | :-----------------------------------: | :----------------------------------------: |
@@ -143,8 +137,8 @@ Returns Content-Type: application/json
 ### auth/register
 
 Description: Register your first user. Returns a JWT access token and sets a
-refresh token (as a http only cookie). JWTs are used by your applicaiton to
-understand who a user is.
+refresh token (as a http only cookie). JWTs are used by your application to
+authenticate a user. 
 
 **POST** Request Body:
 
