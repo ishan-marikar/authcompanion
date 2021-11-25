@@ -16,7 +16,7 @@ export const refresh = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "No Refresh Token Found");
     }
 
-    let validatedjwt = await validateRefreshToken(refreshToken);
+    const validatedjwt = await validateRefreshToken(refreshToken);
 
     if (validatedjwt) {
       const userObj = await db.queryObject({

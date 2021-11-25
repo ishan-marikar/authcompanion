@@ -7,7 +7,6 @@ import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import { superstruct } from "../deps.ts";
 import { isEmail } from "../helpers/validations.ts";
-import { sendHook } from "./webhook.ts";
 import config from "../config.ts";
 
 export const registration = async (ctx: any) => {
@@ -17,8 +16,8 @@ export const registration = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request");
     }
 
-    let body = await ctx.request.body();
-    let bodyValue = await body.value;
+    const body = await ctx.request.body();
+    const bodyValue = await body.value;
 
     if (body.type !== "json") {
       log.warning("Body not JSON");
@@ -99,10 +98,7 @@ export const registration = async (ctx: any) => {
         attributes: userAttributes,
       },
     };
-    sendHook({
-      name: "post-registration",
-      data: { id: user.uuid, ...userAttributes },
-    });
+
     await db.release();
   } catch (err) {
     log.error(err);

@@ -1,3 +1,4 @@
+// deno-lint-ignore no-explicit-any
 export default ({ response }: any) => {
   response.status = 404;
   response.body = {

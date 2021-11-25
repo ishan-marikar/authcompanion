@@ -15,6 +15,7 @@ import config from "../config.ts";
 
 const { KEYPATH } = config;
 
+// deno-lint-ignore no-explicit-any
 async function importKey(path: any) {
   const readKey = await Deno.readTextFile(path);
 
@@ -36,8 +37,9 @@ async function importKey(path: any) {
 
 const cryptoKey = await importKey(KEYPATH);
 
+// deno-lint-ignore no-explicit-any
 export async function makeAccesstoken(result: any) {
-  var date = new Date();
+  const date = new Date();
   date.setHours(date.getHours() + 4);
 
   const key = cryptoKey;
@@ -64,6 +66,7 @@ export async function makeAccesstoken(result: any) {
   throw new Error("ACCESSTOKENKEY is invalid");
 }
 
+// deno-lint-ignore no-explicit-any
 export async function makeRefreshtoken(result: any) {
   const date = new Date();
   date.setDate(date.getDate() + 30 * 2);
@@ -93,6 +96,7 @@ export async function makeRefreshtoken(result: any) {
   throw new Error("REFRESHTOKENKEY is invalid");
 }
 
+// deno-lint-ignore no-explicit-any
 export async function validateRefreshToken(jwt: any) {
   try {
     if (cryptoKey != undefined) {
@@ -110,6 +114,7 @@ export async function validateRefreshToken(jwt: any) {
   }
 }
 
+// deno-lint-ignore no-explicit-any
 export async function validateJWT(jwt: any) {
   try {
     if (cryptoKey != undefined) {
@@ -128,8 +133,9 @@ export async function validateJWT(jwt: any) {
   }
 }
 
+// deno-lint-ignore no-explicit-any
 export async function makeRecoverytoken(result: any) {
-  var date = new Date();
+  const date = new Date();
   date.setMinutes(date.getMinutes() + 10);
 
   if (cryptoKey != undefined) {

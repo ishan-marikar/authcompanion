@@ -1,7 +1,8 @@
+// deno-lint-ignore-file
 import { cyan, green, red, yellow } from "../deps.ts";
 import { format } from "../deps.ts";
-let X_RESPONSE_TIME: string = "X-Response-Time";
-let User_Agent: string = "User-Agent";
+const X_RESPONSE_TIME = "X-Response-Time";
+const USER_AGENT = "User-Agent";
 
 /** The standard logging function that processes and logs requests. */
 const logger = async (
@@ -10,22 +11,22 @@ const logger = async (
 ) => {
   await next();
   const responseTime = response.headers.get(X_RESPONSE_TIME);
-  const User = request.headers.get(User_Agent);
+  const User = request.headers.get(USER_AGENT);
   const status: number = response.status;
-  const log_string: string = `[${
+  const logString = `[${
     format(new Date(Date.now()), "MM-dd-yyyy hh:mm:ss.SSS")
   }  authC::logger] ${request.ip} "${request.method} ${request.url.pathname}" ${
     String(status)
   } ${User} ${responseTime}`;
-  var color = status >= 500
-    ? console.log(`${red(log_string)}`) // red
+  let color = status >= 500
+    ? console.log(`${red(logString)}`) // red
     : status >= 400
-    ? console.log(`${yellow(log_string)}`) // yellow
+    ? console.log(`${yellow(logString)}`) // yellow
     : status >= 300
-    ? console.log(`${cyan(log_string)}`) // cyan
+    ? console.log(`${cyan(logString)}`) // cyan
     : status >= 200
-    ? console.log(`${green(log_string)}`) // green
-    : console.log(`${red(log_string)}`);
+    ? console.log(`${green(logString)}`) // green
+    : console.log(`${red(logString)}`);
 };
 
 /** Response time calculator that also adds response time header. */

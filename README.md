@@ -20,7 +20,7 @@
      <img alt="GitHub license" src="https://img.shields.io/github/license/pmprosociety/authcompanion" />
    </a>
    <a href="https://deno.land">
-     <img src="https://img.shields.io/badge/deno-1.15.3-green?logo=deno"/>
+     <img src="https://img.shields.io/badge/deno-1.16.2-green?logo=deno"/>
    </a>
 
 </div>
@@ -88,28 +88,23 @@ application can manage users and see the documentation below for clear examples
 ## Features
 
 - [x] **Web Forms:** Use pre-built web forms for your application users to: log
-  in with their credentials, register an account, update their profile, and
-  issue forgotten passwords.
+      in with their credentials, register an account, update their profile, and
+      issue forgotten passwords.
 
 - [x] **Authentication API:** Control and mange user accounts and thier sessions
-  via the RESTful Authentication API.
+      via the RESTful Authentication API.
 
 - [x] **Profile and Credentials Management:** Update the password and profile
-  information of your users - account information is stored in a Postgres
-  database.
+      information of your users - account information is stored in a Postgres
+      database.
 
 - [x] **Account Recovery:** Restore a user's access to their account using the
-  **Forgot Password** flow which sends a special link via email for helping
-  users quickly recovery their account.
-
-- [x] **Hooks:** Receive notifications via a webhook after a user has: logged
-  in, registered, or updated their account. Hooks are used to trigger your
-  integrations each time a user performs an authentication action, like logging
-  in.
+      **Forgot Password** flow which sends a special link via email for helping
+      users quickly recovery their account.
 
 - [x] **Token Lifecycle & Logout:** Keep a user's access token fresh while they
-  are using your application. Then, when a user is done in your app, securely
-  log them out.
+      are using your application. Then, when a user is done in your app,
+      securely log them out.
 
 The default AuthC server configuration strives to be reasonable and sane for
 gettings started with user authentication easily.

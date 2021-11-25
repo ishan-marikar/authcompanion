@@ -21,8 +21,8 @@ export const accountRecovery = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request, Please Try Again");
     }
 
-    let body = await ctx.request.body();
-    let bodyValue = await body.value;
+    const body = await ctx.request.body();
+    const bodyValue = await body.value;
 
     if (body.type !== "json") {
       log.debug("Request body is not JSON");

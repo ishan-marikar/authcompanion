@@ -8,7 +8,6 @@ import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { superstruct } from "../deps.ts";
 import { isEmail } from "../helpers/validations.ts";
-import { sendHook } from "./webhook.ts";
 
 export const userProfile = async (ctx: any) => {
   try {
@@ -17,8 +16,8 @@ export const userProfile = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request");
     }
 
-    let body = await ctx.request.body();
-    let bodyValue = await body.value;
+    const body = await ctx.request.body();
+    const bodyValue = await body.value;
 
     if (body.type !== "json") {
       log.debug("Request is not JSON");
@@ -95,10 +94,7 @@ export const userProfile = async (ctx: any) => {
           attributes: userAttributes,
         },
       };
-      sendHook({
-        name: "post-profile-update",
-        data: { id: user.uuid, ...userAttributes },
-      });
+
       await db.release();
     } else {
       // If the user does not provide a password, just update the user's name and email

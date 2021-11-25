@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { base64 } from "./deps.ts";
 
 const key = await crypto.subtle.generateKey(

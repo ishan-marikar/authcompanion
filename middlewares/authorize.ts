@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { Status } from "../deps.ts";
 import { validateJWT } from "../helpers/jwtutils.ts";
 import log from "../helpers/log.ts";
 
+// deno-lint-ignore no-explicit-any
 export default async (ctx: any, next: any) => {
   try {
     const authHeader = ctx.request.headers.get("authorization");

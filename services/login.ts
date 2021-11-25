@@ -6,7 +6,6 @@ import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import { superstruct } from "../deps.ts";
 import config from "../config.ts";
-import { sendHook } from "./webhook.ts";
 
 export const login = async (ctx: any) => {
   try {
@@ -14,8 +13,8 @@ export const login = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
-    let body = await ctx.request.body();
-    let bodyValue = await body.value;
+    const body = await ctx.request.body();
+    const bodyValue = await body.value;
 
     if (body.type !== "json") {
       ctx.throw(Status.BadRequest, "Bad Request, Incorrect Body Type");
@@ -99,10 +98,7 @@ export const login = async (ctx: any) => {
           attributes: userAttributes,
         },
       };
-      sendHook({
-        name: "post-login",
-        data: { id: user.uuid, ...userAttributes },
-      });
+
       await db.release();
     } else {
       ctx.throw(

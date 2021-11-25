@@ -1,6 +1,7 @@
 import { Status } from "../../deps.ts";
 import log from "../../helpers/log.ts";
 
+// deno-lint-ignore no-explicit-any
 export const accountRecovery = async (ctx: any) => {
   try {
     const body = await Deno.readTextFile(
