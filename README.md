@@ -36,6 +36,8 @@ for single factor authentication. It can:
 - Generate and validate [JWTs](https://jwt.io/), a token designed for authenticating
   users into your application APIs.
 
+![landscape](./.github/public/authcLandscape.png)
+
 ## Get Started
 
 Start by downloading the source code or use git, to clone this repository
