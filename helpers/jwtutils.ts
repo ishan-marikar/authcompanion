@@ -92,20 +92,20 @@ export async function makeRefreshtoken(user: any) {
 }
 
 // deno-lint-ignore no-explicit-any
-export async function validateRefreshToken(jwt: any) {
+export async function validateRefreshToken(refreshToken: any) {
   try {
     if (cryptoKey != undefined) {
       //verify the jwt (includes signature validation) otherwise throw error
-      const payload = await verify(jwt, cryptoKey);
+      const validatedjwt = await verify(refreshToken, cryptoKey);
 
-      decode(jwt);
+      decode(refreshToken);
 
-      return payload;
+      return validatedjwt;
     }
     throw new Error();
   } catch (err) {
     log.warning(err.message);
-    throw new Error("Refresh Token is Invalid");
+    throw new Error("User Refresh Token is Invalid");
   }
 }
 
