@@ -12,8 +12,8 @@ export const registration = async (ctx: any) => {
   try {
     //Check if the request includes a body
     if (!ctx.request.hasBody) {
-      log.warning("No body");
-      ctx.throw(Status.BadRequest, "Bad Request");
+      log.warning("No request body in request");
+      ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
     const body = await ctx.request.body();
@@ -21,8 +21,11 @@ export const registration = async (ctx: any) => {
 
     //Check if the request body has Content-Type = application/json
     if (body.type !== "json") {
-      log.warning("Body not JSON");
-      ctx.throw(Status.BadRequest, "Bad Request");
+      log.warning("Request body does not have Content-Type = application/json");
+      ctx.throw(
+        Status.BadRequest,
+        "Bad Request, content-type must be application/json",
+      );
     }
 
     const emailValidate = () =>
@@ -46,7 +49,7 @@ export const registration = async (ctx: any) => {
 
     //Check if the user exists in the database, before creating a new user
     if (emailResult.length) {
-      log.warning("User already exists");
+      log.warning("User already exists in database");
       ctx.throw(
         Status.BadRequest,
         "Bad Request",
@@ -59,7 +62,7 @@ export const registration = async (ctx: any) => {
 
     //Create the new user in the database
     const result = db.queryEntries(
-      `INSERT INTO users (uuid, name, email, password, active, refresh_token, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_DATE, CURRENT_DATE) RETURNING uuid, name, email, refresh_token, created_at, updated_at;`,
+      `INSERT INTO users (uuid, name, email, password, active, refresh_token, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, strftime('%Y-%m-%dT%H:%M:%fZ','now'), strftime('%Y-%m-%dT%H:%M:%fZ','now')) RETURNING uuid, name, email, refresh_token, created_at, updated_at;`,
       [uuid, name, email, hashpassword, "1", refreshToken],
     );
 
@@ -67,6 +70,9 @@ export const registration = async (ctx: any) => {
 
     const userAccesstoken = await makeAccesstoken(user);
     const userRefreshtoken = await makeRefreshtoken(user);
+
+    const date = new Date();
+    date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
 
     ctx.response.status = Status.Created;
     ctx.response.headers.set(
@@ -76,7 +82,9 @@ export const registration = async (ctx: any) => {
 
     ctx.cookies.set("refreshToken", userRefreshtoken, {
       httpOnly: true,
-      expires: new Date("2022-01-01T00:00:00+00:00"),
+      expires: date,
+      secure: config.SECURE?.toLowerCase() !== "false",
+      sameSite: "none",
     });
 
     const userAttributes = {
@@ -96,8 +104,6 @@ export const registration = async (ctx: any) => {
         attributes: userAttributes,
       },
     };
-
-    db.close();
   } catch (err) {
     log.error(err);
 

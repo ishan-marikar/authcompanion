@@ -42,7 +42,6 @@ export async function makeAccesstoken(user: any) {
 
   const key = cryptoKey;
   if (key != undefined) {
-
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
     const jwtpayload: Payload = {
       id: user.uuid,
@@ -74,7 +73,7 @@ export async function makeRefreshtoken(user: any) {
     const newjtiClaim = crypto.randomUUID();
 
     db.query(
-      `UPDATE users SET refresh_token = $1, updated_at = CURRENT_DATE WHERE uuid = $2 RETURNING *;`,
+      `UPDATE users SET refresh_token = $1, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $2 RETURNING *;`,
       [newjtiClaim, user.uuid],
     );
 
