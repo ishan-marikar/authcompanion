@@ -4,7 +4,7 @@ export {
   Router,
   Status,
 } from "https://deno.land/x/oak@v10.0.0/mod.ts";
-export { Client, Pool } from "https://deno.land/x/postgres@v0.13.0/mod.ts";
+export { DB } from "https://deno.land/x/sqlite@v3.2.0/mod.ts";
 export { compare, hash } from "https://deno.land/x/bcrypt@v0.2.4/mod.ts";
 export {
   create,
@@ -13,6 +13,7 @@ export {
   verify,
 } from "https://deno.land/x/djwt@v2.4/mod.ts";
 export type { Header, Payload } from "https://deno.land/x/djwt@v2.4/mod.ts";
+//remove me at some point
 export { v4 } from "https://deno.land/std@0.115.1/uuid/mod.ts";
 export * as log from "https://deno.land/std@0.115.1/log/mod.ts";
 export { LogRecord } from "https://deno.land/std@0.115.1/log/logger.ts";

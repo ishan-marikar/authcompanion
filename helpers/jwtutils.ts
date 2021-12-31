@@ -5,10 +5,8 @@ import {
   getNumericDate,
   Header,
   Payload,
-  v4,
   verify,
 } from "../deps.ts";
-
 import { db } from "../db/db.ts";
 import log from "./log.ts";
 import config from "../config.ts";
@@ -38,13 +36,12 @@ async function importKey(path: any) {
 const cryptoKey = await importKey(KEYPATH);
 
 // deno-lint-ignore no-explicit-any
-export async function makeAccesstoken(result: any) {
+export async function makeAccesstoken(user: any) {
   const date = new Date();
   date.setHours(date.getHours() + 4);
 
   const key = cryptoKey;
   if (key != undefined) {
-    const user = result.rows[0];
 
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
     const jwtpayload: Payload = {
@@ -67,19 +64,18 @@ export async function makeAccesstoken(result: any) {
 }
 
 // deno-lint-ignore no-explicit-any
-export async function makeRefreshtoken(result: any) {
+export async function makeRefreshtoken(user: any) {
   const date = new Date();
   date.setDate(date.getDate() + 30 * 2);
 
   if (cryptoKey != undefined) {
-    const user = result.rows[0];
+    // const user = result.rows[0];
 
-    const newjtiClaim = v4.generate();
+    const newjtiClaim = crypto.randomUUID();
 
-    await db.queryObject(
-      "UPDATE users SET refresh_token = $1 WHERE refresh_token = $2 RETURNING *;",
-      newjtiClaim,
-      user.refresh_token,
+    db.query(
+      `UPDATE users SET refresh_token = $1, updated_at = CURRENT_DATE WHERE uuid = $2 RETURNING *;`,
+      [newjtiClaim, user.uuid],
     );
 
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
