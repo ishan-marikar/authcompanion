@@ -8,75 +8,88 @@ import {
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import { superstruct } from "../deps.ts";
+import config from "../config.ts";
 
 export const recoverToken = async (ctx: any) => {
   try {
+    //Check if the request includes a body
     if (!ctx.request.hasBody) {
-      log.debug("Request has no body");
-      ctx.throw(Status.BadRequest, "Bad Request, Please Try Again");
+      log.warning("No request body in request");
+      ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
     const body = await ctx.request.body();
     const bodyValue = await body.value;
 
+    //Check if the request body has Content-Type = application/json
     if (body.type !== "json") {
-      log.debug("Request body is not JSON");
-      ctx.throw(Status.BadRequest, "Bad Request, Please Try Again");
+      log.warning("Request body does not have Content-Type = application/json");
+      ctx.throw(
+        Status.BadRequest,
+        "Bad Request, content-type must be application/json",
+      );
     }
 
-    // validate request body against a schmea
     const recoverytokenSchema = superstruct.object({
       token: superstruct.string(),
     });
 
+    //Validate request body against a schmea
     superstruct.assert(bodyValue, recoverytokenSchema);
 
     const { token } = bodyValue;
 
-    //if the request has a valid recovery token, issue new access token
-    let validatedtoken = await validateJWT(token);
+    //Validate Recovery
+    const validatedtoken = await validateJWT(token);
 
-    const userObj = await db.queryObject({
-      text:
-        `SELECT name, email, password, "uuid", active, refresh_token, created_at, updated_at FROM users WHERE email = $1;`,
-      args: [validatedtoken.payload.email],
-      fields: [
-        "name",
-        "email",
-        "password",
-        "uuid",
-        "active",
-        "refresh_token",
-        "created_at",
-        "updated_at",
-      ],
-    });
+    //Fetch the user from the database
+    const result = db.queryEntries(
+      `SELECT uuid, name, email, password, active, created_at, updated_at FROM users WHERE email = $1;`,
+      [validatedtoken.email],
+    );
 
-    const user = userObj.rows[0];
+    //Check if the user exists in the database, before issuing new access token
+    if (!result.length) {
+      log.warning("User does not exist in database");
+      ctx.throw(
+        Status.BadRequest,
+        "Recovery token is invalid",
+      );
+    }
 
-    const accessToken = await makeAccesstoken(userObj);
-    const refreshToken = await makeRefreshtoken(userObj);
+    const user = result[0];
+
+    const userAccesstoken = await makeAccesstoken(user);
+    const userRefreshtoken = await makeRefreshtoken(user);
+
+    const date = new Date();
+    date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
 
     ctx.response.status = Status.OK;
-    ctx.cookies.set("refreshToken", refreshToken, {
+    ctx.cookies.set("refreshToken", userRefreshtoken, {
       httpOnly: true,
-      expires: new Date("2022-01-01T00:00:00+00:00"),
+      expires: date,
+      secure: config.SECURE?.toLowerCase() !== "false",
+      sameSite: "none",
     });
+
+    const userAttributes = {
+      name: user.name,
+      email: user.email,
+      created: user.created_at,
+      // deno-lint-ignore camelcase
+      access_token: userAccesstoken.token,
+      // deno-lint-ignore camelcase
+      access_token_expiry: userAccesstoken.expiration,
+    };
+
     ctx.response.body = {
       data: {
-        id: validatedtoken.payload.id,
+        id: user.uuid,
         type: "Recovery Login",
-        attributes: {
-          name: user.name,
-          email: user.email,
-          created: user.created_at,
-          updated: user.updated_at,
-          access_token: accessToken.token,
-          access_token_expiry: accessToken.expiration,
-        },
+        attributes: userAttributes,
       },
     };
-    await db.release();
   } catch (err) {
     log.error(err);
     ctx.response.status = err.status | 400;

@@ -125,17 +125,16 @@ export async function validateJWT(jwt: any) {
     throw new Error();
   } catch (err) {
     log.warning(err.message);
-    throw new Error("Access Token is Invalid");
+    throw new Error("Token is Invalid");
   }
 }
 
 // deno-lint-ignore no-explicit-any
-export async function makeRecoverytoken(result: any) {
+export async function makeRecoverytoken(user: any) {
   const date = new Date();
   date.setMinutes(date.getMinutes() + 10);
 
   if (cryptoKey != undefined) {
-    const user = result.rows[0];
 
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
     const jwtpayload: Payload = {

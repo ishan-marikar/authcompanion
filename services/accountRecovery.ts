@@ -16,82 +16,78 @@ const connectConfig: ConnectConfigWithAuthentication = {
 
 export const accountRecovery = async (ctx: any) => {
   try {
+    //Check if the request includes a body
     if (!ctx.request.hasBody) {
-      log.debug("Request has no body");
-      ctx.throw(Status.BadRequest, "Bad Request, Please Try Again");
+      log.warning("No request body in request");
+      ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
     const body = await ctx.request.body();
     const bodyValue = await body.value;
 
+    //Check if the request body has Content-Type = application/json
     if (body.type !== "json") {
-      log.debug("Request body is not JSON");
-      ctx.throw(Status.BadRequest, "Bad Request, Please Try Again");
+      log.warning("Request body does not have Content-Type = application/json");
+      ctx.throw(
+        Status.BadRequest,
+        "Bad Request, content-type must be application/json",
+      );
     }
 
-    // validate request body against a schema
     const recoverySchema = superstruct.object({
       email: superstruct.string(),
     });
 
+    //Validate request body against a schmea
     superstruct.assert(bodyValue, recoverySchema);
 
     const { email } = bodyValue;
-    const userObj = await db.queryObject({
-      text: `SELECT email FROM users WHERE email = $1;`,
-      args: [email],
-      fields: ["email"],
-    });
 
-    const user = userObj.rows[0];
+    //Fetch the user from the database
+    const result = db.queryEntries(
+      `SELECT uuid, name, email, password, active, created_at, updated_at FROM users WHERE email = $1;`,
+      [email],
+    );
 
-    //if the request has a user that exists in DB, issue an account recovery email
-    if (userObj.rowCount !== 0) {
-      const client = new SmtpClient();
+    //Check if the user exists in the database, before issuing recovery token
+    if (!result.length) {
+      log.warning(
+        "User does not exist in database for recovery token generation",
+      );
+      throw new Error("Server Error");
+    }
 
-      await client.connect(connectConfig);
+    const user = result[0];
 
-      const recoveryToken = await makeRecoverytoken(userObj);
+    const client = new SmtpClient();
 
-      await client.send({
-        from: config.FROMADDRESS ?? "no-reply@example.com",
-        to: <string> user.email,
-        subject: "Account Recovery",
-        content: `Hello 👋 </br>
+    await client.connect(connectConfig);
+
+    const recoveryToken = await makeRecoverytoken(user);
+
+    await client.send({
+      from: config.FROMADDRESS ?? "no-reply@example.com",
+      to: <string> user.email,
+      subject: "Account Recovery",
+      content: `Hello 👋 </br>
           You are receiving this email because you have attempted to recover your account</br>
           Please use the following link to login again: <a href="${config.RECOVERYURL}?token=${recoveryToken.token}">Click Here</a>`,
-      });
+    });
 
-      await client.close();
+    await client.close();
 
-      ctx.response.status = Status.OK;
-      ctx.response.headers.set(
-        "x-authc-client-origin",
-        `${config.CLIENTORIGIN}`,
-      );
-      ctx.response.body = {
-        data: {
-          type: "Recover User",
-          detail:
-            "An email containing a recovery link has been sent to the email address provided",
-        },
-      };
-    } else {
-      // if the request has no valid email in the db, simulate an email being sent
-      ctx.response.status = Status.OK;
-      ctx.response.headers.set(
-        "x-authc-client-origin",
-        `${config.CLIENTORIGIN}`,
-      );
-      ctx.response.body = {
-        data: {
-          type: "Recover User",
-          detail:
-            "An email containing a recovery link has been sent to the email address provided.",
-        },
-      };
-    }
-    await db.release();
+    ctx.response.status = Status.OK;
+    ctx.response.headers.set(
+      "x-authc-client-origin",
+      `${config.CLIENTORIGIN}`,
+    );
+    ctx.response.body = {
+      data: {
+        type: "Recover User",
+        detail:
+          "An email containing a recovery link has been sent to the email address provided",
+      },
+    };
   } catch (err) {
     log.error(err);
     ctx.response.status = err.status | 400;
