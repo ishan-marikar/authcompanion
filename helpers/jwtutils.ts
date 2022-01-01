@@ -114,12 +114,13 @@ export async function validateJWT(jwt: any) {
   try {
     if (cryptoKey != undefined) {
       //verify the jwt (includes signature validation) otherwise throw error
-      const payload = await verify(jwt, cryptoKey);
+      const jwtpayload = await verify(jwt, cryptoKey);
 
       //decode the jwt (without signature verfication) otherwise throw error
-      await decode(jwt);
+      decode(jwt);
 
-      return payload;
+      return jwtpayload;
+      
     }
     throw new Error();
   } catch (err) {
