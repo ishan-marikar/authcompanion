@@ -1,13 +1,13 @@
-FROM denoland/deno:alpine-1.16.2
+FROM denoland/deno:alpine-1.17.1
 
 EXPOSE 3002
 
 WORKDIR /app
-RUN wget https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz; tar xvfz migrate.linux-amd64.tar.gz
 
 # Cache the dependencies as a layer (the following two steps are re-run only when deps.ts is modified).
 # Ideally cache deps.ts will download and compile _all_ external files used in app.ts.
 COPY deps.ts .
+
 RUN deno --unstable cache deps.ts
 
 # These steps will be re-run upon each file change in your working directory:

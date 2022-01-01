@@ -20,7 +20,7 @@
      <img alt="GitHub license" src="https://img.shields.io/github/license/pmprosociety/authcompanion" />
    </a>
    <a href="https://deno.land">
-     <img src="https://img.shields.io/badge/deno-1.16.2-green?logo=deno"/>
+     <img src="https://img.shields.io/badge/deno-1.17.1-green?logo=deno"/>
    </a>
 
 </div>
@@ -33,8 +33,8 @@ AuthCompanion aims to satisfy the most common identity and user management needs
 for single factor authentication. It can:
 
 - Securely handle user registration, login, logout, and account recovery.
-- Generate and validate [JWTs](https://jwt.io/), a token designed for authenticating
-  users into your application APIs.
+- Generate and validate [JWTs](https://jwt.io/), a token designed for
+  authenticating users into your application APIs.
 
 ![landscape](./.github/public/authcLandscape.png)
 
@@ -63,6 +63,7 @@ $ docker-compose up
 ```
 
 ---
+
 ## Explore
 
 ### 1. Create a user
@@ -90,17 +91,18 @@ application can manage users and see the documentation below for clear examples
 
 ## Features
 
-- [x] **Web Forms for User Auth:** Use pre-built and customizable web forms for your application users to: log
-      in with their credentials, register an account, update their profile, and
-      issue forgotten passwords.
+- [x] **Web Forms for User Auth:** Use pre-built and customizable web forms for
+      your application users to: log in with their credentials, register an
+      account, update their profile, and issue forgotten passwords.
 
 - [x] **Manage User Profiles and JWTs:** Update the password and profile
       information of your users - account information is stored in a Postgres
-      database. Easily manage the life-cycle of your user's JWT used for authentication.
+      database. Easily manage the life-cycle of your user's JWT used for
+      authentication.
 
-- [x] **User Account Recovery:** Restore a user's access to their account using the
-      **Forgot Password** flow which sends a special link via email for helping
-      users quickly recover their account.
+- [x] **User Account Recovery:** Restore a user's access to their account using
+      the **Forgot Password** flow which sends a special link via email for
+      helping users quickly recover their account.
 
 The default AuthC server configuration strives to be reasonable and sane for
 getting started with user authentication easily.
@@ -110,8 +112,9 @@ getting started with user authentication easily.
 The web forms for login, registration and forgot password are built using
 [Vue.js](https://v3.vuejs.org/) and [Tailwindcss](https://tailwindcss.com/) -
 making them easily customizable for your specific branding and auth needs. After
-successful login or registration using the web forms, the user's JWT is made available for
-developers to use for authenticating a user into your web application APIs.
+successful login or registration using the web forms, the user's JWT is made
+available for developers to use for authenticating a user into your web
+application APIs.
 
 |             Login Screen              |            Registration Screen             |
 | :-----------------------------------: | :----------------------------------------: |
@@ -140,7 +143,7 @@ Returns Content-Type: application/json
 
 Description: Register your first user. Returns a JWT access token and sets a
 refresh token (as a http only cookie). JWTs are used by your application to
-authenticate a user. 
+authenticate a user.
 
 **POST** Request Body:
 

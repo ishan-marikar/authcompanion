@@ -24,7 +24,6 @@ export default async (ctx: any, next: any) => {
     ctx.state.JWTclaims = payload;
 
     await next();
-
   } catch (err) {
     log.error(err);
     ctx.response.status = err.status | 400;

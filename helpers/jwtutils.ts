@@ -120,7 +120,6 @@ export async function validateJWT(jwt: any) {
       decode(jwt);
 
       return jwtpayload;
-      
     }
     throw new Error();
   } catch (err) {
@@ -135,7 +134,6 @@ export async function makeRecoverytoken(user: any) {
   date.setMinutes(date.getMinutes() + 10);
 
   if (cryptoKey != undefined) {
-
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
     const jwtpayload: Payload = {
       id: user.uuid,

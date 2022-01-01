@@ -5,7 +5,6 @@ import log from "../helpers/log.ts";
 
 export const logout = (ctx: any) => {
   try {
-
     //Fetch the user from the database
     const result = db.queryEntries(
       `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE uuid = $1;`,
@@ -15,7 +14,10 @@ export const logout = (ctx: any) => {
     //Check if the user exists in the database
     if (!result.length) {
       log.warning("User was not found in database");
-      ctx.throw(Status.BadRequest, "Unable to process request, please try again");
+      ctx.throw(
+        Status.BadRequest,
+        "Unable to process request, please try again",
+      );
     }
 
     //Logout user by removing his refresh token in database

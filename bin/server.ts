@@ -12,7 +12,8 @@ app.addEventListener("listen", ({ secure, hostname, port }) => {
   const url = `${protocol}${hostname ?? "localhost"}:${port}`;
   log.info(`
   ################################################
-  🚀  Server listening on: ${url} 
+  🚀  API Server on: http://localhost:${port}/api/v1/auth/
+  🖥️   UI Client on: http://localhost:${port}/client/v1/login
   ################################################
   `);
   log.info("Use CTRL-C to shutdown AuthCompanion");

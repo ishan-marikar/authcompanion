@@ -1,20 +1,18 @@
 import { assertEquals } from "https://deno.land/std@0.107.0/testing/asserts.ts";
 import { db } from "../db/db.ts";
 
-async function purgeTestData() {
-  await db.queryObject(
+function purgeTestData() {
+  db.query(
     "DELETE FROM users WHERE email = $1;",
-    "test_pass@authcompanion.com",
+    ["test_pass@authcompanion.com"],
   );
-
-  db.release();
 }
 
 Deno.test({
   name: "API Endpoint Test: /auth/register",
   async fn() {
     // Clean out the test data from the DB
-    await purgeTestData();
+    purgeTestData();
 
     const requestBody = {
       "name": "Authy Person Testcases",
@@ -221,7 +219,7 @@ Deno.test({
     await response.json();
 
     // Clean out the test data from the DB
-    await purgeTestData();
+    purgeTestData();
 
     assertEquals(
       response.status,
