@@ -20,7 +20,7 @@ export const logout = (ctx: any) => {
 
     //Logout user by removing his refresh token in database
     const userObj = db.queryEntries(
-      `UPDATE users SET refresh_token = '', updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $1 RETURNING uuid, name, email;`,
+      `UPDATE users SET jwt_id = '', updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $1 RETURNING uuid, name, email;`,
       [ctx.state.JWTclaims.id],
     );
 

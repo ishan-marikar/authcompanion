@@ -73,7 +73,7 @@ export async function makeRefreshtoken(user: any) {
     const newjtiClaim = crypto.randomUUID();
 
     db.query(
-      `UPDATE users SET refresh_token = $1, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $2 RETURNING *;`,
+      `UPDATE users SET jwt_id = $1, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $2 RETURNING *;`,
       [newjtiClaim, user.uuid],
     );
 

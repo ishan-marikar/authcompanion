@@ -58,12 +58,12 @@ export const registration = async (ctx: any) => {
 
     const hashpassword = await hash(password);
     const uuid = crypto.randomUUID();
-    const refreshToken = crypto.randomUUID();
+    const jwtid = crypto.randomUUID();
 
     //Create the new user in the database
     const result = db.queryEntries(
-      `INSERT INTO users (uuid, name, email, password, active, refresh_token, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, strftime('%Y-%m-%dT%H:%M:%fZ','now'), strftime('%Y-%m-%dT%H:%M:%fZ','now')) RETURNING uuid, name, email, refresh_token, created_at, updated_at;`,
-      [uuid, name, email, hashpassword, "1", refreshToken],
+      `INSERT INTO users (uuid, name, email, password, active, jwt_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, strftime('%Y-%m-%dT%H:%M:%fZ','now'), strftime('%Y-%m-%dT%H:%M:%fZ','now')) RETURNING uuid, name, email, jwt_id, created_at, updated_at;`,
+      [uuid, name, email, hashpassword, "1", jwtid],
     );
 
     const user = result[0];

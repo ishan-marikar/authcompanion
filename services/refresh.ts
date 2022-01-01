@@ -24,7 +24,7 @@ export const refresh = async (ctx: any) => {
 
     if (validatedToken) {
       const result = db.queryEntries(
-        `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE refresh_token = $1;`,
+        `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE jwt_id = $1;`,
         [validatedToken.jti],
       );
 
