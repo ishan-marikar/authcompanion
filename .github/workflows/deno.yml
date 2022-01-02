@@ -40,11 +40,11 @@ jobs:
           - 3002:3002
 
     steps:
-      - name: Setup repo
+      - name: Setup Repo
         uses: actions/checkout@v2
 
       - name: Setup Deno
-        uses: denoland/setup-deno@main
+        uses: denoland/setup-deno@v1
         with:
           deno-version: "1.17.1" 
 
