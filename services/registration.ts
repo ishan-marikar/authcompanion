@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { Status } from "../deps.ts";
 import { hash } from "../deps.ts";
-import { v4 } from "../deps.ts";
 import { makeAccesstoken, makeRefreshtoken } from "../helpers/jwtutils.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
@@ -11,20 +10,24 @@ import config from "../config.ts";
 
 export const registration = async (ctx: any) => {
   try {
+    //Check if the request includes a body
     if (!ctx.request.hasBody) {
-      log.warning("No body");
-      ctx.throw(Status.BadRequest, "Bad Request");
+      log.warning("No request body in request");
+      ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
     const body = await ctx.request.body();
     const bodyValue = await body.value;
 
+    //Check if the request body has Content-Type = application/json
     if (body.type !== "json") {
-      log.warning("Body not JSON");
-      ctx.throw(Status.BadRequest, "Bad Request");
+      log.warning("Request body does not have Content-Type = application/json");
+      ctx.throw(
+        Status.BadRequest,
+        "Bad Request, content-type must be application/json",
+      );
     }
 
-    // validate request body against a schmea
     const emailValidate = () =>
       superstruct.define("email", (value: any) => isEmail(value));
 
@@ -34,19 +37,19 @@ export const registration = async (ctx: any) => {
       password: superstruct.string(),
     });
 
+    //Validate the request against a schmea
     superstruct.assert(bodyValue, registrationSchema);
 
     const { name, email, password } = bodyValue;
 
-    const userAlreadyExists = await db.queryObject({
-      text: "SELECT email FROM users WHERE email = $1;",
-      args: [email],
-      fields: ["email"],
-    });
+    const emailResult = db.query(
+      `SELECT email FROM users WHERE email = $1;`,
+      [email],
+    );
 
-    if (userAlreadyExists.rowCount !== 0) {
-      log.warning("User already exists");
-      await db.release();
+    //Check if the user exists in the database, before creating a new user
+    if (emailResult.length) {
+      log.warning("User already exists in database");
       ctx.throw(
         Status.BadRequest,
         "Bad Request",
@@ -54,43 +57,46 @@ export const registration = async (ctx: any) => {
     }
 
     const hashpassword = await hash(password);
-    const jtiClaim = v4.generate();
+    const uuid = crypto.randomUUID();
+    const jwtid = crypto.randomUUID();
 
-    const userObj = await db.queryObject({
-      text:
-        `INSERT INTO users (name, email, password, active, refresh_token) VALUES ($1, $2, $3, '1', $4) RETURNING name, email, "uuid", refresh_token, created_at, updated_at;`,
-      args: [name, email, hashpassword, jtiClaim],
-      fields: [
-        "name",
-        "email",
-        "uuid",
-        "refresh_token",
-        "created_at",
-        "updated_at",
-      ],
-    });
+    //Create the new user in the database
+    const result = db.queryEntries(
+      `INSERT INTO users (uuid, name, email, password, active, jwt_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, strftime('%Y-%m-%dT%H:%M:%fZ','now'), strftime('%Y-%m-%dT%H:%M:%fZ','now')) RETURNING uuid, name, email, jwt_id, created_at, updated_at;`,
+      [uuid, name, email, hashpassword, "1", jwtid],
+    );
 
-    let user = userObj.rows[0];
+    const user = result[0];
 
-    const accessToken = await makeAccesstoken(userObj);
-    const refreshToken = await makeRefreshtoken(userObj);
+    const userAccesstoken = await makeAccesstoken(user);
+    const userRefreshtoken = await makeRefreshtoken(user);
+
+    const date = new Date();
+    date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
 
     ctx.response.status = Status.Created;
     ctx.response.headers.set(
       "x-authc-client-origin",
       `${config.CLIENTORIGIN}`,
     );
-    ctx.cookies.set("refreshToken", refreshToken, {
+
+    ctx.cookies.set("refreshToken", userRefreshtoken, {
       httpOnly: true,
-      expires: new Date("2022-01-01T00:00:00+00:00"),
+      expires: date,
+      secure: config.SECURE?.toLowerCase() !== "false",
+      sameSite: "none",
     });
+
     const userAttributes = {
       name: user.name,
       email: user.email,
       created: user.created_at,
-      access_token: accessToken.token,
-      access_token_expiry: accessToken.expiration,
+      // deno-lint-ignore camelcase
+      access_token: userAccesstoken.token,
+      // deno-lint-ignore camelcase
+      access_token_expiry: userAccesstoken.expiration,
     };
+
     ctx.response.body = {
       data: {
         id: user.uuid,
@@ -98,8 +104,6 @@ export const registration = async (ctx: any) => {
         attributes: userAttributes,
       },
     };
-
-    await db.release();
   } catch (err) {
     log.error(err);
 

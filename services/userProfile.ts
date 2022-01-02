@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { Status } from "../deps.ts";
 import { hash } from "../deps.ts";
-import { v4 } from "../deps.ts";
 import { makeAccesstoken, makeRefreshtoken } from "../helpers/jwtutils.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
@@ -11,20 +10,23 @@ import { isEmail } from "../helpers/validations.ts";
 
 export const userProfile = async (ctx: any) => {
   try {
+    //Check if the request includes a body
     if (!ctx.request.hasBody) {
-      log.debug("Request has no body");
-      ctx.throw(Status.BadRequest, "Bad Request");
+      log.debug("No request body in request");
+      ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
     const body = await ctx.request.body();
     const bodyValue = await body.value;
 
+    //Check if the request body has Content-Type = application/json
     if (body.type !== "json") {
-      log.debug("Request is not JSON");
-      ctx.throw(Status.BadRequest, "Bad Request");
+      log.warning("Request body does not have Content-Type = application/json");
+      ctx.throw(
+        Status.BadRequest,
+        "Bad Request, content-type must be application/json",
+      );
     }
-
-    // validate request body against a schmea
 
     const emailValidate = () =>
       superstruct.define("email", (value: any) => isEmail(value));
@@ -35,57 +37,58 @@ export const userProfile = async (ctx: any) => {
       password: superstruct.optional(superstruct.string()),
     });
 
+    //Validate request body against a schmea
     superstruct.assert(bodyValue, updateSchema);
 
     const { name, email, password } = bodyValue;
 
-    const userObj = await db.queryObject({
-      text: 'SELECT email FROM users WHERE "uuid" = $1;',
-      args: [ctx.state.JWTclaims.id],
-      fields: ["uuid"],
-    });
+    //Fetch the user from the database
+    const result = db.queryEntries(
+      `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE uuid = $1;`,
+      [ctx.state.JWTclaims.id],
+    );
 
-    if (userObj.rowCount == 0) {
-      log.warning("Unable to find user to update");
-      await db.release();
-      ctx.throw(
-        Status.BadRequest,
-        "Unable to process request, please try again",
-      );
+    //Check if the user exists in the database
+    if (!result.length) {
+      log.warning("User was not found in database");
+      ctx.throw(Status.BadRequest, "Invalid Auth Token");
     }
 
     if (password) {
       const hashpassword = await hash(password);
-      const jtiClaim = v4.generate();
 
-      const userObj1 = await db.queryObject({
-        text:
-          `Update "users" SET name = $1, email = $2, password = $3, refresh_token = $4 WHERE "uuid" = $5 RETURNING name, email, "uuid", created_at, updated_at;`,
-        args: [name, email, hashpassword, jtiClaim, ctx.state.JWTclaims.id],
-        fields: ["name", "email", "uuid", "created_at", "updated_at"],
-      });
+      const userObj = db.queryEntries(
+        `UPDATE users SET name = $1, email = $2, password = $3, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $4 RETURNING uuid, name, email, password, active, created_at, updated_at;`,
+        [name, email, hashpassword, ctx.state.JWTclaims.id],
+      );
 
-      const user = userObj1.rows[0];
+      const user = userObj[0];
 
-      const accessToken = await makeAccesstoken(userObj1);
-      const refreshToken = await makeRefreshtoken(userObj1);
+      const userAccesstoken = await makeAccesstoken(user);
+      const userRefreshtoken = await makeRefreshtoken(user);
+
+      const date = new Date();
+      date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
 
       ctx.response.status = Status.OK;
       ctx.response.headers.set(
         "x-authc-client-origin",
         `${config.CLIENTORIGIN}`,
       );
-      ctx.cookies.set("refreshToken", refreshToken, {
+      ctx.cookies.set("refreshToken", userRefreshtoken, {
         httpOnly: true,
-        expires: new Date("2022-01-01T00:00:00+00:00"),
+        expires: date,
+        secure: config.SECURE?.toLowerCase() !== "false",
+        sameSite: "none",
       });
       const userAttributes = {
         name: user.name,
         email: user.email,
         created: user.created_at,
-        updated: user.updated_at,
-        access_token: accessToken.token,
-        access_token_expiry: accessToken.expiration,
+        // deno-lint-ignore camelcase
+        access_token: userAccesstoken.token,
+        // deno-lint-ignore camelcase
+        access_token_expiry: userAccesstoken.expiration,
       };
       ctx.response.body = {
         data: {
@@ -94,47 +97,50 @@ export const userProfile = async (ctx: any) => {
           attributes: userAttributes,
         },
       };
-
-      await db.release();
     } else {
       // If the user does not provide a password, just update the user's name and email
-      const userObj2 = await db.queryObject({
-        text:
-          `UPDATE "users" SET name = $1, email = $2 WHERE "uuid" = $3 RETURNING name, email, "uuid", created_at, updated_at;`,
-        args: [name, email, ctx.state.JWTclaims.id],
-        fields: ["name", "email", "uuid", "created_at", "updated_at"],
-      });
+      const userObj = db.queryEntries(
+        `UPDATE users SET name = $1, email = $2, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $3 RETURNING uuid, name, email, password, active, created_at, updated_at;`,
+        [name, email, ctx.state.JWTclaims.id],
+      );
 
-      const user = userObj2.rows[0];
+      const user = userObj[0];
 
-      const accessToken = await makeAccesstoken(userObj2);
-      const refreshToken = await makeRefreshtoken(userObj2);
+      const userAccesstoken = await makeAccesstoken(user);
+      const userRefreshtoken = await makeRefreshtoken(user);
+
+      const date = new Date();
+      date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
 
       ctx.response.status = Status.OK;
       ctx.response.headers.set(
         "x-authc-client-origin",
         `${config.CLIENTORIGIN}`,
       );
-      ctx.cookies.set("refreshToken", refreshToken, {
+      ctx.cookies.set("refreshToken", userRefreshtoken, {
         httpOnly: true,
-        expires: new Date("2022-01-01T00:00:00+00:00"),
+        expires: date,
+        secure: config.SECURE?.toLowerCase() !== "false",
+        sameSite: "none",
       });
-      ctx.response.status = Status.OK;
+
+      const userAttributes = {
+        name: user.name,
+        email: user.email,
+        created: user.created_at,
+        // deno-lint-ignore camelcase
+        access_token: userAccesstoken.token,
+        // deno-lint-ignore camelcase
+        access_token_expiry: userAccesstoken.expiration,
+      };
+
       ctx.response.body = {
         data: {
           id: user.uuid,
           type: "Updated User",
-          attributes: {
-            name: user.name,
-            email: user.email,
-            created: user.created_at,
-            updated: user.updated_at,
-            access_token: accessToken.token,
-            access_token_expiry: accessToken.expiration,
-          },
+          attributes: userAttributes,
         },
       };
-      await db.release();
     }
   } catch (err) {
     log.error(err);

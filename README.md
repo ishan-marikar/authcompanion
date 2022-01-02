@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="" rel="noopener">
+  <a href="https://github.com/authcompanion/authcompanion" rel="noopener">
  <img width=200px height=200px src="https://i.imgur.com/VjsHEC9.png" alt="Project logo"></a>
 </p>
 
@@ -20,7 +20,7 @@
      <img alt="GitHub license" src="https://img.shields.io/github/license/pmprosociety/authcompanion" />
    </a>
    <a href="https://deno.land">
-     <img src="https://img.shields.io/badge/deno-1.16.2-green?logo=deno"/>
+     <img src="https://img.shields.io/badge/deno-1.17.1-green?logo=deno"/>
    </a>
 
 </div>
@@ -33,8 +33,8 @@ AuthCompanion aims to satisfy the most common identity and user management needs
 for single factor authentication. It can:
 
 - Securely handle user registration, login, logout, and account recovery.
-- Generate and validate [JWTs](https://jwt.io/), a token designed for authenticating
-  users into your application APIs.
+- Generate and validate [JWTs](https://jwt.io/introduction), a token designed
+  for authenticating users into your application APIs.
 
 ![landscape](./.github/public/authcLandscape.png)
 
@@ -48,14 +48,14 @@ $ git clone https://github.com/authcompanion/authcompanion.git
 $ cd authcompanion/
 ```
 
-Copy the example config file and change the default values in the .env file (or
-you know... keep it if you're just trying things out)
+Copy the example config file (see below). Take a look through the values in the
+.env file and keep the default settings if you're just trying things out
 
 ```sh
 $ cp env.example .env
 ```
 
-Spin up the AuthCompanion stack locally by running this
+Spin up AuthCompanion locally by running this
 [docker compose](https://docs.docker.com/compose/install/) command:
 
 ```sh
@@ -63,44 +63,50 @@ $ docker-compose up
 ```
 
 ---
+
 ## Explore
 
 ### 1. Create a user
 
-AuthC comes with a number of pre-built
-[Web Forms](#web-forms-for-authentication) to help you quickly integrate user
-auth into your web application.
+AuthC comes with pre-built [Web Forms](#web-forms-for-authentication) to help
+you quickly integrate user auth with your web application and backend services.
 
-Start first with registering an account using this web form:
-http://localhost:3002/client/v1/register
+Now that the AuthC server running, start first with registering an account using
+this web form: http://localhost:3002/client/v1/register
 
 ⚠️ **Note:** You'll be redirected back this repository after successfully
 registering, that's OK! We can change this later to point to your application.
+Just try things out 👍
 
 ### 2. Login as a user
 
 Next, log in with the account you just created using your email and password at
-this web form: http://localhost:3002/client/v1/login
+this web form: http://localhost:3002/client/v1/login. The UIs are very
+customizable, there is no build step required when making code changes - just
+reload the server to see your new updates.
+
+### 3. Examine the APIs
 
 Lastly, check out the [Authentication API](#authentication-api) for how your
 application can manage users and see the documentation below for clear examples
-🚀.
+of how it works 🚀.
 
 ---
 
 ## Features
 
-- [x] **Web Forms for User Auth:** Use pre-built and customizable web forms for your application users to: log
-      in with their credentials, register an account, update their profile, and
-      issue forgotten passwords.
+- [x] **Web Forms for User Auth:** Use pre-built and customizable web forms for
+      your application users to: log in with their credentials, register an
+      account, update their profile, and issue forgotten passwords.
 
 - [x] **Manage User Profiles and JWTs:** Update the password and profile
-      information of your users - account information is stored in a Postgres
-      database. Easily manage the life-cycle of your user's JWT used for authentication.
+      information of your users - all account information is stored in a SQLite
+      database. Easily manage the life-cycle of your user's JWT used for
+      authentication.
 
-- [x] **User Account Recovery:** Restore a user's access to their account using the
-      **Forgot Password** flow which sends a special link via email for helping
-      users quickly recover their account.
+- [x] **User Account Recovery:** Restore a user's access to their account using
+      the **Forgot Password** flow which sends a special link via email for
+      helping users quickly recover their account.
 
 The default AuthC server configuration strives to be reasonable and sane for
 getting started with user authentication easily.
@@ -109,9 +115,12 @@ getting started with user authentication easily.
 
 The web forms for login, registration and forgot password are built using
 [Vue.js](https://v3.vuejs.org/) and [Tailwindcss](https://tailwindcss.com/) -
-making them easily customizable for your specific branding and auth needs. After
-successful login or registration using the web forms, the user's JWT is made available for
-developers to use for authenticating a user into your web application APIs.
+making them easily customizable for your specific branding and auth needs (no
+build step required, restart the AuthC to view your code changes).
+
+After successful login or registration using the web forms, the user's Access
+Token (aka JWT) is made available for developers to use for authenticating a
+user into your web application APIs.
 
 |             Login Screen              |            Registration Screen             |
 | :-----------------------------------: | :----------------------------------------: |
@@ -140,7 +149,7 @@ Returns Content-Type: application/json
 
 Description: Register your first user. Returns a JWT access token and sets a
 refresh token (as a http only cookie). JWTs are used by your application to
-authenticate a user. 
+authenticate a user.
 
 **POST** Request Body:
 
@@ -197,7 +206,6 @@ Response:
       "name": "Authy Person",
       "email": "hello_world@authcompanion.com",
       "created": "2021-05-12T00:05:13.243Z",
-      "updated": "2021-05-12T00:05:13.247Z",
       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlZWU1Y2E1LWQ2OGYtNDY5OC05MDZkLTYyYWY2ZDcwNWYwNSIsIm5hbWUiOiJBdXRoeSBQZXJzb24iLCJlbWFpbCI6ImhlbGxvX3dvcmxkQGF1dGhjb21wYW5pb24uY29tIiwiZXhwIjoxNjIwNzkyNDg2fQ.XPRAwMtkus2gd1MaTW2wDEs2SF048uOco_aAiQfTYhQ",
       "access_token_expiry": 1620792486
     }
@@ -230,7 +238,6 @@ Response:
       "name": "Authy Person",
       "email": "hello_world@authcompanion.com",
       "created": "2021-05-12T00:05:13.243Z",
-      "updated": "2021-05-12T02:25:05.709Z",
       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlZWU1Y2E1LWQ2OGYtNDY5OC05MDZkLTYyYWY2ZDcwNWYwNSIsIm5hbWUiOiJBdXRoeSBQZXJzb24iLCJlbWFpbCI6ImhlbGxvX3dvcmxkQGF1dGhjb21wYW5pb24uY29tIiwiZXhwIjoxNjIwODAwODYwfQ.dqPcv27hxmWcYastcXgRyrHKE3lFvz4OD8wPz6yAmPM",
       "access_token_expiry": 1620800860
     }
@@ -270,7 +277,6 @@ Response:
       "name": "Authy Person1",
       "email": "hello_world1@authcompanion.com",
       "created": "2021-05-12T00:05:13.243Z",
-      "updated": "2021-05-12T02:29:06.708Z",
       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlZWU1Y2E1LWQ2OGYtNDY5OC05MDZkLTYyYWY2ZDcwNWYwNSIsIm5hbWUiOiJBdXRoeSBQZXJzb24xIiwiZW1haWwiOiJoZWxsb193b3JsZDFAYXV0aGNvbXBhbmlvbi5jb20iLCJleHAiOjE2MjA4MDA5NDd9.44lKad-6le-wmofkQ9QebIkdB6QtotnvAW7aApxfiA0",
       "access_token_expiry": 1620800947
     }
@@ -335,7 +341,6 @@ Response:
       "name": "Authy Person1",
       "email": "hello_world1@authcompanion.com",
       "created": "2021-05-12T00:05:13.243Z",
-      "updated": "2021-05-12T02:35:00.443Z",
       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlZWU1Y2E1LWQ2OGYtNDY5OC05MDZkLTYyYWY2ZDcwNWYwNSIsIm5hbWUiOiJBdXRoeSBQZXJzb24xIiwiZW1haWwiOiJoZWxsb193b3JsZDFAYXV0aGNvbXBhbmlvbi5jb20iLCJleHAiOjE2MjA4MDE0MDl9.sUhT-tDK_ZW4zADhfBku6Z9mMDm6yuELYfDgmwLojz4",
       "access_token_expiry": 1620801409
     }

@@ -27,32 +27,11 @@ jobs:
 
     services:
       # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        # Set health checks to wait until postgres has started
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
       AuthC:
         # Docker Hub image
         image: authcompanion/authcompanion:main
         # Env
         env:
-          DB_HOSTNAME: postgres
-          DB_PORT: 5432
-          DB_PASSWORD: postgres
-          DATABASE: postgres
-          DB_USER: postgres
           KEY_PATH: ./keyfile
           SECURE: false
           PORT: 3002
@@ -61,42 +40,17 @@ jobs:
           - 3002:3002
 
     steps:
-      - name: Setup repo
+      - name: Setup Repo
         uses: actions/checkout@v2
 
       - name: Setup Deno
-        uses: denoland/setup-deno@main
+        uses: denoland/setup-deno@v1
         with:
-          deno-version: "1.16.2" 
+          deno-version: "1.17.1" 
 
-      - name: Cache Dependencies
-        run: deno cache --unstable deps.ts
-
-      - name: Generate Keys
-        run: deno run -A --unstable generateKey.ts
-
-      - name: Install Migrate
-        run: wget https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz; tar xvfz migrate.linux-amd64.tar.gz
-
-      - name: Run Migrations
-        run: ./migrate.linux-amd64 -source file://db/migrations -database "postgres://$DBUSER:$DBPASSWORD@$DBHOSTNAME:$DBPORT/$DATABASE?sslmode=disable" up
-        env:
-          DBHOSTNAME: 127.0.0.1
-          DBPORT: 5432
-          DBPASSWORD: postgres
-          DATABASE: postgres
-          DBUSER: postgres
-          KEY_PATH: ./keyfile
-          SECURE: false
-
-      - name: Run Tests
+      - name: Run Integration Tests
         run: deno test -A --unstable
         env:
-          DB_HOSTNAME: 127.0.0.1
-          DB_PORT: 5432
-          DB_PASSWORD: postgres
-          DATABASE: postgres
-          DB_USER: postgres
           KEY_PATH: ./keyfile
           SECURE: false
 

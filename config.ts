@@ -10,20 +10,6 @@ const ORIGIN = Deno.env.get("ORIGIN");
 //Secure Cookie
 const SECURE = Deno.env.get("SECURE");
 
-//Database related environment variables
-//Database user
-const DBUSER = Deno.env.get("DB_USER");
-//Database name
-const DATABASE = Deno.env.get("DATABASE");
-//Database hostname
-const DBHOSTNAME = Deno.env.get("DB_HOSTNAME");
-//Database user password
-const DBPASSWORD = Deno.env.get("DB_PASSWORD");
-//Database port
-const DBPORT = Deno.env.get("DB_PORT");
-//Database pool max connections
-const DBCONNECTIONS = Deno.env.get("MAX_DB_CONNECTIONS");
-
 //JWT related environment variables
 const KEYPATH = Deno.env.get("KEY_PATH");
 
@@ -47,11 +33,6 @@ const FROMADDRESS = Deno.env.get("FROM_ADDRESS");
 //URL to use for recovery emails
 const RECOVERYURL = Deno.env.get("RECOVERY_REDIRECT_URL");
 
-//Webhook related environment variables
-//Webhook URL
-const WEBHOOKURL = Deno.env.get("WEBHOOK_URL");
-const WEBHOOKSECRET = Deno.env.get("WEBHOOK_SECRET");
-
 //Use AuthC in 'Client Mode' which makes available the UIs for Login, Registration,ect.
 const CLIENTMODE = Deno.env.get("CLIENT_MODE");
 const CLIENTORIGIN = Deno.env.get("CLIENT_ORIGIN");
@@ -60,12 +41,6 @@ export default {
   AUTHPORT,
   ORIGIN,
   SECURE,
-  DBUSER,
-  DATABASE,
-  DBHOSTNAME,
-  DBPASSWORD,
-  DBPORT,
-  DBCONNECTIONS,
   KEYPATH,
   LOGLEVEL,
   LOGHANDLER,
@@ -75,8 +50,6 @@ export default {
   SMTPPASSWORD,
   FROMADDRESS,
   RECOVERYURL,
-  WEBHOOKURL,
-  WEBHOOKSECRET,
   CLIENTMODE,
   CLIENTORIGIN,
 };

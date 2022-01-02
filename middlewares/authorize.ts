@@ -8,14 +8,14 @@ export default async (ctx: any, next: any) => {
     const authHeader = ctx.request.headers.get("authorization");
 
     if (!authHeader) {
-      log.debug("Missing Authentication header");
+      log.debug("Missing auth header");
       ctx.throw(Status.Unauthorized, "Unauthorized");
     }
 
     const userJWT = authHeader.split(" ")[1];
 
     if (!userJWT) {
-      log.debug("Missing valid JWT in Authentication header");
+      log.debug("Missing access token in header");
       ctx.throw(Status.Unauthorized, "Unauthorized");
     }
 

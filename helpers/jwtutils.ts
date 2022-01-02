@@ -5,10 +5,8 @@ import {
   getNumericDate,
   Header,
   Payload,
-  v4,
   verify,
 } from "../deps.ts";
-
 import { db } from "../db/db.ts";
 import log from "./log.ts";
 import config from "../config.ts";
@@ -38,14 +36,12 @@ async function importKey(path: any) {
 const cryptoKey = await importKey(KEYPATH);
 
 // deno-lint-ignore no-explicit-any
-export async function makeAccesstoken(result: any) {
+export async function makeAccesstoken(user: any) {
   const date = new Date();
   date.setHours(date.getHours() + 4);
 
   const key = cryptoKey;
   if (key != undefined) {
-    const user = result.rows[0];
-
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
     const jwtpayload: Payload = {
       id: user.uuid,
@@ -67,19 +63,18 @@ export async function makeAccesstoken(result: any) {
 }
 
 // deno-lint-ignore no-explicit-any
-export async function makeRefreshtoken(result: any) {
+export async function makeRefreshtoken(user: any) {
   const date = new Date();
   date.setDate(date.getDate() + 30 * 2);
 
   if (cryptoKey != undefined) {
-    const user = result.rows[0];
+    // const user = result.rows[0];
 
-    const newjtiClaim = v4.generate();
+    const newjtiClaim = crypto.randomUUID();
 
-    await db.queryObject(
-      "UPDATE users SET refresh_token = $1 WHERE refresh_token = $2 RETURNING *;",
-      newjtiClaim,
-      user.refresh_token,
+    db.query(
+      `UPDATE users SET jwt_id = $1, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $2 RETURNING *;`,
+      [newjtiClaim, user.uuid],
     );
 
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
@@ -97,20 +92,20 @@ export async function makeRefreshtoken(result: any) {
 }
 
 // deno-lint-ignore no-explicit-any
-export async function validateRefreshToken(jwt: any) {
+export async function validateRefreshToken(refreshToken: any) {
   try {
     if (cryptoKey != undefined) {
       //verify the jwt (includes signature validation) otherwise throw error
-      const payload = await verify(jwt, cryptoKey);
+      const validatedjwt = await verify(refreshToken, cryptoKey);
 
-      decode(jwt);
+      decode(refreshToken);
 
-      return payload;
+      return validatedjwt;
     }
     throw new Error();
   } catch (err) {
     log.warning(err.message);
-    throw new Error("Refresh Token is Invalid");
+    throw new Error("User Refresh Token is Invalid");
   }
 }
 
@@ -119,28 +114,26 @@ export async function validateJWT(jwt: any) {
   try {
     if (cryptoKey != undefined) {
       //verify the jwt (includes signature validation) otherwise throw error
-      const payload = await verify(jwt, cryptoKey);
+      const jwtpayload = await verify(jwt, cryptoKey);
 
       //decode the jwt (without signature verfication) otherwise throw error
-      await decode(jwt);
+      decode(jwt);
 
-      return payload;
+      return jwtpayload;
     }
     throw new Error();
   } catch (err) {
     log.warning(err.message);
-    throw new Error("Access Token is Invalid");
+    throw new Error("Token is Invalid");
   }
 }
 
 // deno-lint-ignore no-explicit-any
-export async function makeRecoverytoken(result: any) {
+export async function makeRecoverytoken(user: any) {
   const date = new Date();
   date.setMinutes(date.getMinutes() + 10);
 
   if (cryptoKey != undefined) {
-    const user = result.rows[0];
-
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
     const jwtpayload: Payload = {
       id: user.uuid,
