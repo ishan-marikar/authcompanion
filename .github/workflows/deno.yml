@@ -38,6 +38,8 @@ jobs:
         # port
         ports:
           - 3002:3002
+        volumes:
+          - dbdata:/app/db/
 
     steps:
       - name: Setup Repo
