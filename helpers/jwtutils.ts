@@ -131,7 +131,7 @@ export async function validateJWT(jwt: any) {
 // deno-lint-ignore no-explicit-any
 export async function makeRecoverytoken(user: any) {
   const date = new Date();
-  date.setMinutes(date.getMinutes() + 10);
+  date.setMinutes(date.getMinutes() + 35);
 
   if (cryptoKey != undefined) {
     const jwtheader: Header = { alg: "HS512", typ: "JWT" };
