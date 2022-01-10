@@ -4,16 +4,16 @@ version: '3.8'
 services:
   api:
     build: .
-    container_name: authc-api
+    container_name: authc-server
     env_file:
       - .env
-    restart: always
     volumes:
       - ./db/users.db:/app/db/users.db
     ports:
       - 127.0.0.1:3002:3002
 # Optional SMTP mail catcher for testing
   mailhog:
+    container_name: mailcatcher
     image: mailhog/mailhog
     entrypoint: ["/bin/sh", "-c", "MailHog &>/dev/null"]
     ports:

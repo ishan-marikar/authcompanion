@@ -1,3 +1,4 @@
+// @ts-nocheck
 import app from "../app.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
@@ -23,14 +24,13 @@ const serverlisten = app.listen({ port: PORT, signal });
 
 const sigIntHandler = () => {
   controller.abort();
+  console.log();
+  log.info(`AuthCompanion has exited, Good bye 👋`);
+  Deno.exit();
 };
 
 Deno.addSignalListener("SIGINT", sigIntHandler);
+
 Deno.addSignalListener("SIGTERM", sigIntHandler);
 
 await serverlisten;
-console.log();
-
-log.info(`AuthCompanion has exited, Good bye 👋`);
-
-Deno.exit();
