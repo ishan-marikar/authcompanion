@@ -69,9 +69,10 @@ export const accountRecovery = async (ctx: any) => {
       from: config.FROMADDRESS ?? "no-reply@example.com",
       to: <string> user.email,
       subject: "Account Recovery",
-      content: `Hello 👋 </br>
-          You are receiving this email because you have attempted to recover your account</br>
-          Please use the following link to login again: <a href="${config.RECOVERYURL}?token=${recoveryToken.token}">Click Here</a>`,
+      content: `Hello </br></br>
+          You recently requested a password reset for your account.</br>
+          Please use the following link to login again. This password reset is only valid for the next 35 minutes: </br>
+          <a href="${config.RECOVERYURL}?token=${recoveryToken.token}">Reset your password</a>`,
     });
 
     await client.close();

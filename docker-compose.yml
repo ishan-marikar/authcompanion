@@ -1,4 +1,4 @@
-# docker-compose for development stack
+# docker-compose for AuthC development stack
 version: '3.8'
 
 services:
@@ -12,3 +12,9 @@ services:
       - ./db/users.db:/app/db/users.db
     ports:
       - 127.0.0.1:3002:3002
+# Optional SMTP mail catcher for testing
+  mailhog:
+    image: mailhog/mailhog
+    entrypoint: ["/bin/sh", "-c", "MailHog &>/dev/null"]
+    ports:
+      - 8025:8025
