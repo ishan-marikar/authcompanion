@@ -20,7 +20,7 @@
      <img alt="GitHub license" src="https://img.shields.io/github/license/pmprosociety/authcompanion" />
    </a>
    <a href="https://deno.land">
-     <img src="https://img.shields.io/badge/deno-1.17.1-green?logo=deno"/>
+     <img src="https://img.shields.io/badge/deno-1.17.2-green?logo=deno"/>
    </a>
 
 </div>
@@ -396,10 +396,13 @@ AuthCompanion is licensed under the [MIT](https://opensource.org/licenses/MIT)
 
 ## Contributions
 
-Author: Paul Fischer [(Github)](https://github.com/pmprosociety)
+We're looking for kind, thoughtful people to build and improve AuthC for the
+benefit of everyone. Please see the list of current
+[contributors](https://github.com/authcompanion/authcompanion/graphs/contributors).
 
-Contributors: Teddy Schmitz [(Github)](https://github.com/Teddy-Schmitz)
+Thank you for the logo design - Timothy Reeder
+[(Github)](https://github.com/tokonoma)
 
-Logo Design - Timothy Reeder [(Github)](https://github.com/tokonoma)
+---
 
 Take AuthCompanion, the useful sidekick, into your next web project! 👏
