@@ -69,29 +69,20 @@ $ docker-compose up
 ### 1. Create a user
 
 AuthC comes with pre-built [Web Forms](#web-forms-for-authentication) to help
-you quickly integrate user auth with your web application and backend services.
+you quickly integrate user auth alongside your web application and backend APIs.
 
-Now that the AuthC server running, start first with registering an account using
-this web form: http://localhost:3002/client/v1/register
+With the AuthC server running, start first by registering an account using this
+web form: http://localhost:3002/client/v1/register
 
-⚠️ **Note:** You'll be redirected back this repository after successfully
-registering, that's OK! We can change this later to point to your application.
-Just try things out 👍
-
-### 2. Login as a user
+### 2. Login as the new user
 
 Next, log in with the account you just created using your email and password at
-this web form: http://localhost:3002/client/v1/login. The UIs are very
-customizable, there is no build step required when making code changes - just
-reload the server to see your new updates.
+this web form: http://localhost:3002/client/v1/login.
 
 ### 3. Examine the APIs
 
-Lastly, check out the [Authentication API](#authentication-api) for how your
-application can manage users and see the documentation below for clear examples
-of how it works 🚀.
-
----
+Lastly, check out the [Authentication API](#authentication-api) for information
+on how you can manage user authentication.
 
 ## Features
 
@@ -116,11 +107,11 @@ getting started with user authentication easily.
 The web forms for login, registration and forgot password are built using
 [Vue.js](https://v3.vuejs.org/) and [Tailwindcss](https://tailwindcss.com/) -
 making them easily customizable for your specific branding and auth needs (no
-build step required, restart the AuthC to view your code changes).
+build step required, restart the AuthC to view your code changes). 👍
 
 After successful login or registration using the web forms, the user's Access
-Token (aka JWT) is made available for developers to use for authenticating a
-user into your web application APIs.
+Token (a JWT) is made available for developers to use when authenticating a user
+into your web application APIs.
 
 |             Login Screen              |            Registration Screen             |
 | :-----------------------------------: | :----------------------------------------: |
