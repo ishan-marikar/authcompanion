@@ -71,8 +71,8 @@ $ docker-compose up
 AuthC comes with pre-built [Web Forms](#web-forms-for-authentication) to help
 you quickly integrate user auth alongside your web application and backend APIs.
 
-With the AuthC server running, start first by registering an account using
-this web form: http://localhost:3002/client/v1/register
+With the AuthC server running, start first by registering an account using this
+web form: http://localhost:3002/client/v1/register
 
 ### 2. Login as the new user
 
@@ -81,7 +81,8 @@ this web form: http://localhost:3002/client/v1/login.
 
 ### 3. Examine the APIs
 
-Lastly, check out the [Authentication API](#authentication-api) for information on how you can manage user authentication. 
+Lastly, check out the [Authentication API](#authentication-api) for information
+on how you can manage user authentication.
 
 ## Features
 
@@ -109,8 +110,8 @@ making them easily customizable for your specific branding and auth needs (no
 build step required, restart the AuthC to view your code changes). 👍
 
 After successful login or registration using the web forms, the user's Access
-Token (a JWT) is made available for developers to use when authenticating a
-user into your web application APIs.
+Token (a JWT) is made available for developers to use when authenticating a user
+into your web application APIs.
 
 |             Login Screen              |            Registration Screen             |
 | :-----------------------------------: | :----------------------------------------: |

@@ -121,7 +121,7 @@
             console.log(resbody);
 
             if (response.ok) {
-              window.sessionStorage.setItem("ACCESS_TOKEN", resbody.data.attributes.access_token);
+              window.localStorage.setItem("ACCESS_TOKEN", resbody.data.attributes.access_token);
               showError.value = false;
 
               showError.value = false;

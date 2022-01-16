@@ -94,7 +94,7 @@
         let errorDetail = ref(null);
 
         const token = computed(() => {
-          return sessionStorage.getItem("ACCESS_TOKEN");
+          return localStorage.getItem("ACCESS_TOKEN");
         });
 
         try {
@@ -132,7 +132,7 @@
             console.log(resbody);
 
             if (response.ok) {
-              window.sessionStorage.setItem("ACCESS_TOKEN", resbody.data.attributes.access_token);
+              window.localStorage.setItem("ACCESS_TOKEN", resbody.data.attributes.access_token);
               errorTitle.value = "Success";
               errorDetail.value = "Your account has been updated";
               showError.value = true;
@@ -165,7 +165,7 @@
               }
               const resbody = await response.json();
               console.log(resbody);
-              window.sessionStorage.setItem("ACCESS_TOKEN", resbody.data.attributes.access_token);
+              window.localStorage.setItem("ACCESS_TOKEN", resbody.data.attributes.access_token);
               options.headers.Authorization = `Bearer ${resbody.data.attributes.access_token}`;
               return fetchRefresh(url, options, retries - 1);
             }

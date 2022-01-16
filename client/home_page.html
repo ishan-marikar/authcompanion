@@ -48,21 +48,17 @@
 
             <p class="text-black">The access token contains information about the user.
               <a class="text-blue-600 underline hover:text-blue-800" :href="jwtDebugUrl">Decode the token's payload
-                here.</a>
+                here to find out.</a>
             </p>
-            <p class="pt-8 text-black ">When you're ready, tell AuthC to redirect users to your application's home page
-              after they
-              login.
+            <p class="pt-8 text-black ">When you're ready, tell AuthC to redirect users after they login to your
+              application's home page (instead of this one).
             </p>
             <p class="pt-3 text-black">In AuthCompanion's .env file change "CLIENT_ORIGIN" to the URL of your
-              application (instead
-              of this page). Example:</p>
+              application. Example:</p>
             <p class="py-3 text-sm">CLIENT_ORIGIN=http://localhost:3002/client/v1/home
             </p>
-            <p class="py-3 text-black">Store the access token in your application's memory and use it to authenicate the
-              user
-              into backend APIs. And remember to refresh the access token with AuthCompanion's /refresh endpoint before
-              it expires!
+            <p class="py-3 text-black">The access token is available in localStorage - use it to both understand who the
+              user is and as an authentication method into your app's backend APIs.
             </p>
             <p class="py-3 text-black">And remember to refresh the access token with AuthCompanion's /refresh endpoint
               before it expires!
@@ -93,7 +89,7 @@
         let jwt = ref("");
         let jwtDebugUrl = ref("");
 
-        jwt.value = window.sessionStorage.getItem("ACCESS_TOKEN");
+        jwt.value = window.localStorage.getItem("ACCESS_TOKEN");
 
         if (jwt) {
           let jwtURL = "https://jwt.io/#debugger-io?token=" + jwt.value
