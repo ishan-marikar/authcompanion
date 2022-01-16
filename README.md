@@ -74,24 +74,18 @@ you quickly integrate user auth with your web application and backend services.
 Now that the AuthC server running, start first with registering an account using
 this web form: http://localhost:3002/client/v1/register
 
-⚠️ **Note:** You'll be redirected back this repository after successfully
-registering, that's OK! We can change this later to point to your application.
-Just try things out 👍
-
-### 2. Login as a user
+### 2. Login as the new user
 
 Next, log in with the account you just created using your email and password at
-this web form: http://localhost:3002/client/v1/login. The UIs are very
-customizable, there is no build step required when making code changes - just
-reload the server to see your new updates.
+this web form: http://localhost:3002/client/v1/login.
+
+AuthCompanion's web forms are easily customizable to match your application
+branding; there is no build step required when making style code changes - just
+reload the browser to see any of your changes. 👍
 
 ### 3. Examine the APIs
 
-Lastly, check out the [Authentication API](#authentication-api) for how your
-application can manage users and see the documentation below for clear examples
-of how it works 🚀.
-
----
+## Lastly, check out the [Authentication API](#authentication-api) for information on how you can user JWTs to manage users.
 
 ## Features
 
