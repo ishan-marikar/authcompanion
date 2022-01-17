@@ -44,7 +44,11 @@ Start by downloading the source code or use git, to clone this repository
 
 ```sh
 $ git clone https://github.com/authcompanion/authcompanion.git
+```
 
+Change the current working directory to authcompanion
+
+```sh
 $ cd authcompanion/
 ```
 
@@ -55,11 +59,21 @@ Copy the example config file (see below). Take a look through the values in the
 $ cp env.example .env
 ```
 
-Spin up AuthCompanion locally by running this
+Start up the AuthCompanion server by running this
 [docker compose](https://docs.docker.com/compose/install/) command:
 
 ```sh
 $ docker-compose up
+```
+
+Or you could instead use this docker run command:
+
+```sh
+docker run --name authcompanion \
+ --env-file .env \
+ -v $(pwd)/db/users.db:/app/db/users.db \
+ -p 3002:3002 \
+authcompanion/authcompanion:main
 ```
 
 ---
