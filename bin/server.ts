@@ -2,6 +2,7 @@
 import app from "../app.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
+import sendTelemetry from "../helpers/telemetry.ts";
 
 const PORT = Number(config.AUTHPORT ?? 3002);
 const controller = new AbortController();
@@ -20,6 +21,7 @@ app.addEventListener("listen", ({ secure, hostname, port }) => {
   log.info("Use CTRL-C to shutdown AuthCompanion");
 });
 
+sendTelemetry({ event_name: "open_server_event" });
 const serverlisten = app.listen({ port: PORT, signal });
 
 const sigIntHandler = () => {
