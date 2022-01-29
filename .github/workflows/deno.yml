@@ -48,7 +48,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: "1.17.1" 
+          deno-version: "1.18.1" 
 
       - name: Run Integration Tests
         run: deno test -A --unstable
