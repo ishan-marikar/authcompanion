@@ -5,7 +5,7 @@
 
 <h2 align="center">AuthCompanion</h2>
 
-<p align="center"> An effortless, open source, token-based user management server - well suited for modern web projects.
+<p align="center"> An effortless, token-based user management server - well suited for modern web projects.
 </p>
 
 <div align="center">
@@ -16,14 +16,14 @@
    <a href="https://github.com/pmprosociety/authcompanion/stargazers">
      <img alt="GitHub stars" src="https://img.shields.io/github/stars/pmprosociety/authcompanion">
    </a>
-   <a href="">
-     <img alt="GitHub license" src="https://img.shields.io/github/license/pmprosociety/authcompanion" />
-   </a>
    <a href="https://deno.land">
      <img src="https://img.shields.io/badge/deno-1.18.1-green?logo=deno"/>
    </a>
 
 </div>
+<br />
+<p align="center">  <a href="https://docs.authcompanion.com/"> Click Here for AuthCompanion's Documentation Site </a>
+</p>
 
 ---
 
@@ -397,15 +397,18 @@ Tokens.
 
 ## License
 
-AuthCompanion is licensed under the [MIT](https://opensource.org/licenses/MIT)
+AuthCompanion is licensed under the
+[Big Time Public License](https://bigtimelicense.com/versions/2.0.1). Read more
+about the license rationale
+[here](https://docs.authcompanion.com/guide/licenseoverview.html).
 
 ## Contributions
 
-We're looking for kind, thoughtful people to build and improve AuthC for the
-benefit of everyone. Please see the list of current
-[contributors](https://github.com/authcompanion/authcompanion/graphs/contributors).
+Thank you for
+[considering a contribution](https://docs.authcompanion.com/contributing/), here
+to help.
 
-Thank you for the logo design - Timothy Reeder
+Cheers for the logo design - Timothy Reeder
 [(Github)](https://github.com/tokonoma)
 
 ---
