@@ -11,7 +11,7 @@ services:
       - SMTP_HOSTNAME=mailhog
       - SMTP_PORT=1025
     volumes:
-      - ./db/users.db:/app/db/users.db
+      - ./db/:/app/db/prod/
     ports:
       - 127.0.0.1:3002:3002
 # Optional SMTP mail catcher for testing account recovery emails. Inbox UI is available on 8025

@@ -12,13 +12,13 @@ app.addEventListener("listen", ({ secure, hostname, port }) => {
   const protocol = secure ? "https://" : "http://";
   log.debug(`HTTPS is ${secure ? "on" : "off"}`);
   const url = `${protocol}${hostname ?? "localhost"}:${port}`;
-  log.info(`
+  console.log(`
   ################################################
   🖥️   UI Client on: http://localhost:${port}/client/v1/login
   🚀  API Server on: http://localhost:${port}/api/v1/auth/
   ################################################
   `);
-  log.info("Use CTRL-C to shutdown AuthCompanion");
+  console.log("Use CTRL-C to shutdown AuthCompanion");
 });
 
 sendTelemetry({ event_name: "open_server_event" });

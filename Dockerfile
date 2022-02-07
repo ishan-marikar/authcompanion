@@ -13,6 +13,8 @@ RUN deno --unstable cache deps.ts
 # These steps will be re-run upon each file change in your working directory:
 ADD . .
 
+RUN mkdir -p /app/db/prod/
+
 # Generate key used for JWT signing and verifying
 RUN deno run -A --unstable generateKey.ts
 

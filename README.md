@@ -69,7 +69,7 @@ Or you could instead use this docker run command:
 ```sh
 docker run --name authcompanion \
  --env-file .env \
- -v $(pwd)/db/users.db:/app/db/users.db \
+ -v $(pwd)/db/:/app/db/prod/ \
  -p 3002:3002 \
 authcompanion/authcompanion:main
 ```
