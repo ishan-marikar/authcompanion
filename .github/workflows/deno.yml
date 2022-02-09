@@ -19,40 +19,27 @@ jobs:
 #    runs-on: ${{ matrix.os }} # runs a test on Ubuntu, Windows and macOS
     runs-on: ubuntu-latest # Service containers only work on ubuntu
 
-
     strategy:
       matrix:
         deno: ["v1.x"]
 #        os: [macOS-latest, windows-latest, ubuntu-latest]
 
-    services:
-      # Label used to access the service container
-      AuthC:
-        # Docker Hub image
-        image: authcompanion/authcompanion:main
-        # Env
-        env:
-          KEY_PATH: ./keyfile
-          SECURE: false
-          PORT: 3002
-        # port
-        ports:
-          - 3002:3002
-        volumes:
-          - dbdata:/app/db/
-
     steps:
-      - name: Setup Repo
-        uses: actions/checkout@v2
-
-      - name: Setup Deno
+      - name: Setup Deno JavaScript Runtime
         uses: denoland/setup-deno@v1
         with:
           deno-version: "1.18.1" 
 
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup AuthC
+        run: cp env.example .env && mkdir ./db/prod
+
+      - name: Spin up AuthC Docker
+        run: docker-compose up -d
+
       - name: Run Integration Tests
         run: deno test -A --unstable
-        env:
-          KEY_PATH: ./keyfile
-          SECURE: false
+
 
