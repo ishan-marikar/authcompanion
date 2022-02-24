@@ -37,6 +37,9 @@ const RECOVERYURL = Deno.env.get("RECOVERY_REDIRECT_URL");
 const CLIENTMODE = Deno.env.get("CLIENT_MODE");
 const CLIENTORIGIN = Deno.env.get("CLIENT_ORIGIN");
 
+// DB related environment variables
+const DB_URI = Deno.env.get("DB_URI");
+
 export default {
   AUTHPORT,
   ORIGIN,
@@ -52,4 +55,5 @@ export default {
   RECOVERYURL,
   CLIENTMODE,
   CLIENTORIGIN,
+  DB_URI,
 };

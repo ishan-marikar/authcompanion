@@ -4,7 +4,7 @@ export {
   Router,
   Status,
 } from "https://deno.land/x/oak@v10.4.0/mod.ts";
-export { DB } from "https://deno.land/x/sqlite@v3.2.1/mod.ts";
+export { DB, SqliteError } from "https://deno.land/x/sqlite@v3.2.1/mod.ts";
 export { compare, hash } from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 export {
   create,
