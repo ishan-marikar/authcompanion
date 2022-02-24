@@ -1,5 +1,5 @@
 import { DB } from "../deps.ts";
-import { copy } from "https://deno.land/std@0.125.0/fs/mod.ts";
+import { copy } from "https://deno.land/std@0.126.0/fs/mod.ts";
 import log from "../helpers/log.ts";
 
 try {

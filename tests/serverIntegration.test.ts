@@ -1,4 +1,5 @@
-import { assertEquals } from "https://deno.land/std@0.123.0/testing/asserts.ts";
+// @ts-nocheck
+import { assertEquals } from "https://deno.land/std@0.126.0/testing/asserts.ts";
 import { db } from "../db/db.ts";
 
 function purgeTestData() {
