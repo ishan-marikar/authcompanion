@@ -4,8 +4,7 @@ import { db } from "../db/db.ts";
 
 function purgeTestData() {
   db.query(
-    "DELETE FROM users WHERE email = $1;",
-    ["test_pass@authcompanion.com"],
+    `DELETE FROM users WHERE email='test_pass@authcompanion.com';`,
   );
 }
 
@@ -29,7 +28,7 @@ Deno.test({
       body: JSON.stringify(requestBody), // body data type must match "Content-Type" header
     });
 
-    response.json(); // parses JSON response into native JavaScript objects
+    await response.json(); // parses JSON response into native JavaScript objects
 
     assertEquals(
       response.status,
@@ -55,7 +54,7 @@ Deno.test({
       body: JSON.stringify(requestBody), // body data type must match "Content-Type" header
     });
 
-    response.json(); // parses JSON response into native JavaScript objects
+    await response.json(); // parses JSON response into native JavaScript objects
 
     assertEquals(
       response.status,
@@ -81,7 +80,7 @@ Deno.test({
       body: JSON.stringify(requestBody), // body data type must match "Content-Type" header
     });
 
-    response.json(); // parses JSON response into native JavaScript objects
+    await response.json(); // parses JSON response into native JavaScript objects
 
     assertEquals(
       response.status,
@@ -127,7 +126,7 @@ Deno.test({
       body: JSON.stringify(requestBody), // body data type must match "Content-Type" header
     });
 
-    response.json(); // parses JSON response into native JavaScript objects
+    await response.json(); // parses JSON response into native JavaScript objects
 
     assertEquals(
       response.status,
