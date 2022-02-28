@@ -384,6 +384,7 @@ Response:
 ---
 
 ## Reference Architecture
+
 ![landscape](./.github/public/authcLandscape.png)
 
 ## Related Readings
