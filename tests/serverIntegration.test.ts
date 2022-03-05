@@ -8,6 +8,10 @@ function purgeTestData() {
   );
 }
 
+// workaround for https://github.com/dyedgreen/deno-sqlite/issues/174
+Deno.flockSync = () => {};
+Deno.funlockSync = () => {};
+
 Deno.test({
   name: "API Endpoint Test: /auth/register",
   async fn() {
