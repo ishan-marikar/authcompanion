@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup AuthC
-        run: cp env.example .env && mkdir ./db/prod
+        run: cp env.example .env
 
       - name: Spin up AuthC Docker
         run: docker-compose up -d
