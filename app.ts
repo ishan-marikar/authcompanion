@@ -10,6 +10,10 @@ import cors from "./middlewares/cors.ts";
 import serverIndex from "./routes/index.server.ts";
 import clientIndex from "./routes/index.client.ts";
 
+// workaround for https://github.com/dyedgreen/deno-sqlite/issues/174
+Deno.flockSync = () => {};
+Deno.funlockSync = () => {};
+
 const app = new Application();
 
 app.use(logger.logger);
