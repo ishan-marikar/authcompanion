@@ -1,13 +1,13 @@
-// @ts-nocheck
-import { Status } from "../deps.ts";
-import { compare } from "../deps.ts";
-import { makeAccesstoken, makeRefreshtoken } from "../helpers/jwtutils.ts";
+import { compare, Context, Status, superstruct } from "../deps.ts";
+import { JWTHandler } from "../helpers/JWTHandler.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
-import { superstruct } from "../deps.ts";
 import config from "../config.ts";
+import { User } from "../models/User.ts";
 
-export const login = async (ctx: any) => {
+const jwtHandler = await JWTHandler.getInstance();
+
+export const login = async (ctx: Context) => {
   try {
     //Check if the request includes a body
     if (!ctx.request.hasBody) {
@@ -15,7 +15,7 @@ export const login = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
-    const body = await ctx.request.body();
+    const body = ctx.request.body();
     const bodyValue = await body.value;
 
     //Check if the request body has Content-Type = application/json
@@ -35,10 +35,10 @@ export const login = async (ctx: any) => {
     //Validate request body against a schmea
     superstruct.assert(bodyValue, loginSchema);
 
-    const { email, password } = bodyValue;
+    const { email, password }: { email: string; password: string } = bodyValue;
 
     //Fetch the user from the database
-    const result = db.queryEntries(
+    const result = db.queryEntries<User>(
       `SELECT uuid, name, email, password, active, created_at, updated_at FROM users WHERE email = $1;`,
       [email],
     );
@@ -64,12 +64,12 @@ export const login = async (ctx: any) => {
     }
 
     //Check their password is correct, then issue access token
-    if (await compare(password, <string> user.password)) {
-      const userAccesstoken = await makeAccesstoken(user);
-      const userRefreshtoken = await makeRefreshtoken(user);
+    if (await compare(password, user.password)) {
+      const userAccesstoken = await jwtHandler.makeAccesstoken(user);
+      const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
 
       const date = new Date();
-      date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
+      date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
 
       ctx.response.status = Status.OK;
       ctx.response.headers.set(
@@ -88,9 +88,7 @@ export const login = async (ctx: any) => {
         name: user.name,
         email: user.email,
         created: user.created_at,
-        // deno-lint-ignore camelcase
         access_token: userAccesstoken.token,
-        // deno-lint-ignore camelcase
         access_token_expiry: userAccesstoken.expiration,
       };
 
@@ -114,10 +112,12 @@ export const login = async (ctx: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };

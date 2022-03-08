@@ -1,14 +1,12 @@
-// @ts-nocheck
-import { Status } from "../deps.ts";
-import { hash } from "../deps.ts";
-import { makeAccesstoken, makeRefreshtoken } from "../helpers/jwtutils.ts";
+import { Context, hash, Status, superstruct } from "../deps.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
-import { superstruct } from "../deps.ts";
 import { isEmail } from "../helpers/validations.ts";
+import { jwtHandler } from "./mod.ts";
+import { User } from "../models/User.ts";
 
-export const userProfile = async (ctx: any) => {
+export const userProfile = async (ctx: Context) => {
   try {
     //Check if the request includes a body
     if (!ctx.request.hasBody) {
@@ -16,7 +14,7 @@ export const userProfile = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
-    const body = await ctx.request.body();
+    const body = ctx.request.body();
     const bodyValue = await body.value;
 
     //Check if the request body has Content-Type = application/json
@@ -29,7 +27,7 @@ export const userProfile = async (ctx: any) => {
     }
 
     const emailValidate = () =>
-      superstruct.define("email", (value: any) => isEmail(value));
+      superstruct.define("email", (value: string) => isEmail(value));
 
     const updateSchema = superstruct.object({
       name: superstruct.string(),
@@ -43,7 +41,7 @@ export const userProfile = async (ctx: any) => {
     const { name, email, password } = bodyValue;
 
     //Fetch the user from the database
-    const result = db.queryEntries(
+    const result = db.queryEntries<User>(
       `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE uuid = $1;`,
       [ctx.state.JWTclaims.id],
     );
@@ -57,18 +55,18 @@ export const userProfile = async (ctx: any) => {
     if (password) {
       const hashpassword = await hash(password);
 
-      const userObj = db.queryEntries(
+      const userObj = db.queryEntries<User>(
         `UPDATE users SET name = $1, email = $2, password = $3, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $4 RETURNING uuid, name, email, password, active, created_at, updated_at;`,
         [name, email, hashpassword, ctx.state.JWTclaims.id],
       );
 
       const user = userObj[0];
 
-      const userAccesstoken = await makeAccesstoken(user);
-      const userRefreshtoken = await makeRefreshtoken(user);
+      const userAccesstoken = await jwtHandler.makeAccesstoken(user);
+      const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
 
       const date = new Date();
-      date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
+      date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
 
       ctx.response.status = Status.OK;
       ctx.response.headers.set(
@@ -99,18 +97,18 @@ export const userProfile = async (ctx: any) => {
       };
     } else {
       // If the user does not provide a password, just update the user's name and email
-      const userObj = db.queryEntries(
+      const userObj = db.queryEntries<User>(
         `UPDATE users SET name = $1, email = $2, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $3 RETURNING uuid, name, email, password, active, created_at, updated_at;`,
         [name, email, ctx.state.JWTclaims.id],
       );
 
       const user = userObj[0];
 
-      const userAccesstoken = await makeAccesstoken(user);
-      const userRefreshtoken = await makeRefreshtoken(user);
+      const userAccesstoken = await jwtHandler.makeAccesstoken(user);
+      const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
 
       const date = new Date();
-      date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
+      date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
 
       ctx.response.status = Status.OK;
       ctx.response.headers.set(
@@ -147,10 +145,12 @@ export const userProfile = async (ctx: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };

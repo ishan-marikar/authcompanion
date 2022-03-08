@@ -1,5 +1,6 @@
 export {
   Application,
+  Context,
   isHttpError,
   Router,
   Status,

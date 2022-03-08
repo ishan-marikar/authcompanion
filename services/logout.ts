@@ -1,9 +1,9 @@
-// @ts-nocheck
-import { Status } from "../deps.ts";
+import { Context, Status } from "../deps.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
+import { User } from "../models/User.ts";
 
-export const logout = (ctx: any) => {
+export const logout = (ctx: Context) => {
   try {
     //Fetch the user from the database
     const result = db.queryEntries(
@@ -21,7 +21,7 @@ export const logout = (ctx: any) => {
     }
 
     //Logout user by removing his refresh token in database
-    const userObj = db.queryEntries(
+    const userObj = db.queryEntries<User>(
       `UPDATE users SET jwt_id = '', updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $1 RETURNING uuid, name, email;`,
       [ctx.state.JWTclaims.id],
     );
@@ -44,10 +44,12 @@ export const logout = (ctx: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };
