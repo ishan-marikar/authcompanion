@@ -4,7 +4,7 @@ import log from "../helpers/log.ts";
 
 const jwtHandler = await JWTHandler.getInstance();
 
-export default async (ctx: Context, next: () => Promise<unknown>) => {
+export const authorize = async (ctx: Context, next: () => Promise<unknown>) => {
   try {
     const authHeader = ctx.request.headers.get("authorization");
 
