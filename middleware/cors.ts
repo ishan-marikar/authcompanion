@@ -1,8 +1,7 @@
-//configs
+import { Context } from "../deps.ts";
 import config from "../config.ts";
 
-// deno-lint-ignore no-explicit-any
-export default (ctx: any, next: any) => {
+export const cors = (ctx: Context, next: () => Promise<unknown>) => {
   ctx.response.headers.set("Access-Control-Allow-Origin", config.ORIGIN ?? "*");
   ctx.response.headers.set("Access-Control-Allow-Credentials", "true");
   ctx.response.headers.set(

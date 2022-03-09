@@ -1,4 +1,3 @@
-// @ts-nocheck
 import app from "../app.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";

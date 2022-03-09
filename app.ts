@@ -2,9 +2,9 @@ import { Application } from "./deps.ts";
 import config from "./config.ts";
 
 // app middleware
-import notFound from "./middlewares/notFound.ts";
-import logger from "./middlewares/logger.ts";
-import cors from "./middlewares/cors.ts";
+import { notFound } from "./middleware/notFound.ts";
+import { logger, responseTime } from "./middleware/logger.ts";
+import { cors } from "./middleware/cors.ts";
 
 // app routes
 import serverIndex from "./routes/index.server.ts";
@@ -16,8 +16,8 @@ Deno.funlockSync = () => {};
 
 const app = new Application();
 
-app.use(logger.logger);
-app.use(logger.responseTime);
+app.use(logger);
+app.use(responseTime);
 app.use(cors);
 
 // API Server Routes
