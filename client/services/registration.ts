@@ -1,8 +1,7 @@
-import { Status } from "../../deps.ts";
+import { Context, Status } from "../../deps.ts";
 import log from "../../helpers/log.ts";
 
-// deno-lint-ignore no-explicit-any
-export const registration = async (ctx: any) => {
+export const registration = async (ctx: Context) => {
   try {
     const body = await Deno.readTextFile(
       Deno.cwd() + "/client/registration_page.html",
