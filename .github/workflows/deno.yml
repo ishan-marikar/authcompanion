@@ -16,19 +16,19 @@ on:
 
 jobs:
   test:
-#    runs-on: ${{ matrix.os }} # runs a test on Ubuntu, Windows and macOS
+    #    runs-on: ${{ matrix.os }} # runs a test on Ubuntu, Windows and macOS
     runs-on: ubuntu-latest # Service containers only work on ubuntu
 
     strategy:
       matrix:
-        deno: ["v1.x"]
-#        os: [macOS-latest, windows-latest, ubuntu-latest]
+        deno: ['v1.x']
+    #        os: [macOS-latest, windows-latest, ubuntu-latest]
 
     steps:
       - name: Setup Deno JavaScript Runtime
         uses: denoland/setup-deno@v1
         with:
-          deno-version: "1.19.0" 
+          deno-version: '1.19.0'
 
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -36,10 +36,11 @@ jobs:
       - name: Setup AuthC
         run: cp env.example .env
 
+      - name: Setup DB
+        run: sqlite3 ./db/authcompanion_users.db "VACUUM;"
+
       - name: Spin up AuthC Docker
         run: docker-compose up -d
 
       - name: Run Integration Tests
         run: deno test -A --unstable
-
-
