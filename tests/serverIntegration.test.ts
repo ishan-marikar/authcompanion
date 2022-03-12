@@ -231,3 +231,32 @@ Deno.test({
     );
   },
 });
+
+Deno.test({
+  name: "API Login Failure",
+  async fn() {
+    const requestBody = {
+      "email": "does_not_exist@authcompanion.com",
+      "password": "mysecretpass",
+    };
+
+    const response = await fetch(
+      "http://localhost:3002/api/v1/auth/login",
+      {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody), // body data type must match "Content-Type" header
+      },
+    );
+
+    await response.text();
+
+    assertEquals(
+      response.status,
+      403,
+      "The API should have sent a 403",
+    );
+  },
+});

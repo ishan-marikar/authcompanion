@@ -5,6 +5,7 @@ import config from "./config.ts";
 import { notFound } from "./middleware/notFound.ts";
 import { logger, responseTime } from "./middleware/logger.ts";
 import { cors } from "./middleware/cors.ts";
+import { errorHandler } from "./middleware/errorHandler.ts";
 
 // app routes
 import serverIndex from "./routes/index.server.ts";
@@ -16,6 +17,7 @@ Deno.funlockSync = () => {};
 
 const app = new Application();
 
+app.use(errorHandler);
 app.use(logger);
 app.use(responseTime);
 app.use(cors);
