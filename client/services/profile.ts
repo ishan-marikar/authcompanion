@@ -1,14 +1,15 @@
-import { Status } from "../../deps.ts";
-import { validateJWT } from "../../helpers/jwtutils.ts";
+import { Context, Status } from "../../deps.ts";
+import { JWTHandler } from "../../helpers/JWTHandler.ts";
 import log from "../../helpers/log.ts";
 
-// deno-lint-ignore no-explicit-any
-export const profile = async (ctx: any) => {
+const jwtHandler = await JWTHandler.getInstance();
+
+export const profile = async (ctx: Context) => {
   try {
     const recoveryToken = ctx.request.url.searchParams.get("token");
 
     if (recoveryToken) {
-      await validateJWT(recoveryToken);
+      await jwtHandler.validateJWT(recoveryToken);
     }
 
     const body = await Deno.readTextFile(
@@ -23,10 +24,12 @@ export const profile = async (ctx: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };

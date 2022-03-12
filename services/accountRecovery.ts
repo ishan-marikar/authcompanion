@@ -1,11 +1,15 @@
-// @ts-nocheck
-import { Status } from "../deps.ts";
-import { makeRecoverytoken } from "../helpers/jwtutils.ts";
+import {
+  ConnectConfigWithAuthentication,
+  Context,
+  SmtpClient,
+  Status,
+  superstruct,
+} from "../deps.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
-import { ConnectConfigWithAuthentication, SmtpClient } from "../deps.ts";
-import { superstruct } from "../deps.ts";
 import config from "../config.ts";
+import { jwtHandler } from "./mod.ts";
+import { User } from "../models/User.ts";
 
 const connectConfig: ConnectConfigWithAuthentication = {
   hostname: config.SMTPHOSTNAME ? config.SMTPHOSTNAME : "",
@@ -14,7 +18,7 @@ const connectConfig: ConnectConfigWithAuthentication = {
   password: config.SMTPPASSWORD ? config.SMTPPASSWORD : "",
 };
 
-export const accountRecovery = async (ctx: any) => {
+export const accountRecovery = async (ctx: Context) => {
   try {
     //Check if the request includes a body
     if (!ctx.request.hasBody) {
@@ -22,7 +26,7 @@ export const accountRecovery = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
-    const body = await ctx.request.body();
+    const body = ctx.request.body();
     const bodyValue = await body.value;
 
     //Check if the request body has Content-Type = application/json
@@ -44,7 +48,7 @@ export const accountRecovery = async (ctx: any) => {
     const { email } = bodyValue;
 
     //Fetch the user from the database
-    const result = db.queryEntries(
+    const result = db.queryEntries<User>(
       `SELECT uuid, name, email, password, active, created_at, updated_at FROM users WHERE email = $1;`,
       [email],
     );
@@ -63,7 +67,7 @@ export const accountRecovery = async (ctx: any) => {
 
     await client.connect(connectConfig);
 
-    const recoveryToken = await makeRecoverytoken(user);
+    const recoveryToken = await jwtHandler.makeRecoverytoken(user);
 
     await client.send({
       from: config.FROMADDRESS ?? "no-reply@example.com",
@@ -78,10 +82,7 @@ export const accountRecovery = async (ctx: any) => {
     await client.close();
 
     ctx.response.status = Status.OK;
-    ctx.response.headers.set(
-      "x-authc-client-origin",
-      `${config.CLIENTORIGIN}`,
-    );
+    ctx.response.headers.set("x-authc-client-origin", `${config.CLIENTORIGIN}`);
     ctx.response.body = {
       data: {
         type: "Recover User",
@@ -94,10 +95,12 @@ export const accountRecovery = async (ctx: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };

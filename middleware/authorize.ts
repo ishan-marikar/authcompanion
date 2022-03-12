@@ -1,9 +1,10 @@
-import { Status } from "../deps.ts";
-import { validateJWT } from "../helpers/jwtutils.ts";
+import { Context, Status } from "../deps.ts";
+import { JWTHandler } from "../helpers/JWTHandler.ts";
 import log from "../helpers/log.ts";
 
-// deno-lint-ignore no-explicit-any
-export default async (ctx: any, next: any) => {
+const jwtHandler = await JWTHandler.getInstance();
+
+export const authorize = async (ctx: Context, next: () => Promise<unknown>) => {
   try {
     const authHeader = ctx.request.headers.get("authorization");
 
@@ -19,7 +20,7 @@ export default async (ctx: any, next: any) => {
       ctx.throw(Status.Unauthorized, "Unauthorized");
     }
 
-    const payload = await validateJWT(userJWT);
+    const payload = await jwtHandler.validateJWT(userJWT);
 
     ctx.state.JWTclaims = payload;
 
@@ -29,10 +30,12 @@ export default async (ctx: any, next: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };

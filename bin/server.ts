@@ -1,8 +1,7 @@
-// @ts-nocheck
 import app from "../app.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
-import sendTelemetry from "../helpers/telemetry.ts";
+import { sendTelemetry } from "../helpers/telemetry.ts";
 
 const PORT = Number(config.AUTHPORT ?? 3002);
 const controller = new AbortController();

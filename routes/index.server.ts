@@ -7,8 +7,7 @@ import { userProfile } from "../services/userProfile.ts";
 import { accountRecovery } from "../services/accountRecovery.ts";
 import { recoverToken } from "../services/recoverytoken.ts";
 import { logout } from "../services/logout.ts";
-
-import authorize from "../middlewares/authorize.ts";
+import { authorize } from "../middleware/authorize.ts";
 
 //API Server Path
 const pathPrefix = "/api/v1/";

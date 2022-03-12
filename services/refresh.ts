@@ -1,15 +1,11 @@
-// @ts-nocheck
-import { Status } from "../deps.ts";
-import {
-  makeAccesstoken,
-  makeRefreshtoken,
-  validateRefreshToken,
-} from "../helpers/jwtutils.ts";
+import { Context, Status } from "../deps.ts";
+import { jwtHandler } from "./mod.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
+import { User } from "../models/User.ts";
 
-export const refresh = async (ctx: any) => {
+export const refresh = async (ctx: Context) => {
   try {
     const refreshToken = await ctx.cookies.get("refreshToken");
 
@@ -20,10 +16,10 @@ export const refresh = async (ctx: any) => {
     }
 
     //Validate the refresh token recieved
-    const validatedToken = await validateRefreshToken(refreshToken);
+    const validatedToken = await jwtHandler.validateJWT(refreshToken);
 
     if (validatedToken) {
-      const result = db.queryEntries(
+      const result = db.queryEntries<User>(
         `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE jwt_id = $1;`,
         [validatedToken.jti],
       );
@@ -42,11 +38,11 @@ export const refresh = async (ctx: any) => {
         ctx.throw(Status.Forbidden, "User has been disabled");
       }
 
-      const userAccesstoken = await makeAccesstoken(user);
-      const userRefreshtoken = await makeRefreshtoken(user);
+      const userAccesstoken = await jwtHandler.makeAccesstoken(user);
+      const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
 
       const date = new Date();
-      date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
+      date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
 
       ctx.response.status = Status.OK;
       ctx.response.headers.set(
@@ -88,10 +84,12 @@ export const refresh = async (ctx: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };

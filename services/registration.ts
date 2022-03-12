@@ -1,14 +1,12 @@
-// @ts-nocheck
-import { Status } from "../deps.ts";
-import { hash } from "../deps.ts";
-import { makeAccesstoken, makeRefreshtoken } from "../helpers/jwtutils.ts";
+import { Context, hash, Status, superstruct } from "../deps.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
-import { superstruct } from "../deps.ts";
 import { isEmail } from "../helpers/validations.ts";
 import config from "../config.ts";
+import { jwtHandler } from "./mod.ts";
+import { User } from "../models/User.ts";
 
-export const registration = async (ctx: any) => {
+export const registration = async (ctx: Context) => {
   try {
     //Check if the request includes a body
     if (!ctx.request.hasBody) {
@@ -16,7 +14,7 @@ export const registration = async (ctx: any) => {
       ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
     }
 
-    const body = await ctx.request.body();
+    const body = ctx.request.body();
     const bodyValue = await body.value;
 
     //Check if the request body has Content-Type = application/json
@@ -29,7 +27,7 @@ export const registration = async (ctx: any) => {
     }
 
     const emailValidate = () =>
-      superstruct.define("email", (value: any) => isEmail(value));
+      superstruct.define("email", (value: string) => isEmail(value));
 
     const registrationSchema = superstruct.object({
       name: superstruct.string(),
@@ -42,18 +40,14 @@ export const registration = async (ctx: any) => {
 
     const { name, email, password } = bodyValue;
 
-    const emailResult = db.query(
-      `SELECT email FROM users WHERE email = $1;`,
-      [email],
-    );
+    const emailResult = db.query(`SELECT email FROM users WHERE email = $1;`, [
+      email,
+    ]);
 
     //Check if the user exists in the database, before creating a new user
     if (emailResult.length) {
       log.warning("User already exists in database");
-      ctx.throw(
-        Status.BadRequest,
-        "Bad Request",
-      );
+      ctx.throw(Status.BadRequest, "Bad Request");
     }
 
     const hashpassword = await hash(password);
@@ -61,24 +55,21 @@ export const registration = async (ctx: any) => {
     const jwtid = crypto.randomUUID();
 
     //Create the new user in the database
-    const result = db.queryEntries(
+    const result = db.queryEntries<User>(
       `INSERT INTO users (uuid, name, email, password, active, jwt_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, strftime('%Y-%m-%dT%H:%M:%fZ','now'), strftime('%Y-%m-%dT%H:%M:%fZ','now')) RETURNING uuid, name, email, jwt_id, created_at, updated_at;`,
       [uuid, name, email, hashpassword, "1", jwtid],
     );
 
     const user = result[0];
 
-    const userAccesstoken = await makeAccesstoken(user);
-    const userRefreshtoken = await makeRefreshtoken(user);
+    const userAccesstoken = await jwtHandler.makeAccesstoken(user);
+    const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
 
     const date = new Date();
-    date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000)); // TODO: Make configurable now, set to 7 days
+    date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
 
     ctx.response.status = Status.Created;
-    ctx.response.headers.set(
-      "x-authc-client-origin",
-      `${config.CLIENTORIGIN}`,
-    );
+    ctx.response.headers.set("x-authc-client-origin", `${config.CLIENTORIGIN}`);
 
     ctx.cookies.set("refreshToken", userRefreshtoken, {
       httpOnly: true,
@@ -91,9 +82,7 @@ export const registration = async (ctx: any) => {
       name: user.name,
       email: user.email,
       created: user.created_at,
-      // deno-lint-ignore camelcase
       access_token: userAccesstoken.token,
-      // deno-lint-ignore camelcase
       access_token_expiry: userAccesstoken.expiration,
     };
 
@@ -110,10 +99,12 @@ export const registration = async (ctx: any) => {
     ctx.response.status = err.status | 400;
     ctx.response.type = "json";
     ctx.response.body = {
-      errors: [{
-        title: "Server Error",
-        detail: err.message,
-      }],
+      errors: [
+        {
+          title: "Server Error",
+          detail: err.message,
+        },
+      ],
     };
   }
 };

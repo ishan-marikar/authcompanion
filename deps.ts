@@ -1,6 +1,9 @@
 export {
   Application,
+  Context,
   isHttpError,
+  Request,
+  Response,
   Router,
   Status,
 } from "https://deno.land/x/oak@v10.4.0/mod.ts";

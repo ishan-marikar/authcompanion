@@ -1,5 +1,6 @@
-// deno-lint-ignore no-explicit-any
-export default ({ response }: any) => {
+import { Response } from "../deps.ts";
+
+export const notFound = ({ response }: { response: Response }) => {
   response.status = 404;
   response.body = {
     errors: [{

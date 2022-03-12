@@ -1,6 +1,6 @@
-// @ts-nocheck
-
-async function sendTelemetry(data = {}) {
+export async function sendTelemetry(data: {
+  event_name: string;
+}): Promise<Response> {
   const response = await fetch(
     "https://event-server.fly.dev/api/v1/s2s/event",
     {
@@ -12,7 +12,5 @@ async function sendTelemetry(data = {}) {
       body: JSON.stringify(data),
     },
   );
-  return await response.json();
+  return response;
 }
-
-export default sendTelemetry;

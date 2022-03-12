@@ -1,13 +1,12 @@
-// deno-lint-ignore-file
-import { cyan, green, red, yellow } from "../deps.ts";
+import { cyan, green, red, Request, Response, yellow } from "../deps.ts";
 import { format } from "../deps.ts";
 const X_RESPONSE_TIME = "X-Response-Time";
 const USER_AGENT = "User-Agent";
 
 /** The standard logging function that processes and logs requests. */
-const logger = async (
-  { response, request }: { response: any; request: any },
-  next: Function,
+export const logger = async (
+  { response, request }: { response: Response; request: Request },
+  next: () => Promise<unknown>,
 ) => {
   await next();
   const responseTime = response.headers.get(X_RESPONSE_TIME);
@@ -18,7 +17,7 @@ const logger = async (
   }  authC::logger] ${request.ip} "${request.method} ${request.url.pathname}" ${
     String(status)
   } ${User} ${responseTime}`;
-  let color = status >= 500
+  status >= 500
     ? console.log(`${red(logString)}`) // red
     : status >= 400
     ? console.log(`${yellow(logString)}`) // yellow
@@ -30,14 +29,12 @@ const logger = async (
 };
 
 /** Response time calculator that also adds response time header. */
-const responseTime = async (
-  { response }: { response: any },
-  next: Function,
+export const responseTime = async (
+  { response }: { response: Response },
+  next: () => Promise<unknown>,
 ) => {
   const start = Date.now();
   await next();
   const ms: number = Date.now() - start;
   response.headers.set(X_RESPONSE_TIME, `${ms}ms`);
 };
-
-export default { logger, responseTime };
