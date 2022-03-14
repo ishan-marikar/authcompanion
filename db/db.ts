@@ -6,7 +6,7 @@ import log from "../helpers/log.ts";
 const db = new DB(config.DB_URI);
 
 // Migrate DB to latest version
-const setupDB = () => {
+export const setupDB = () => {
   try {
     const sql = Deno.readTextFileSync("./db/1__users.sql");
     sql.split(";").forEach((stmt) => {
