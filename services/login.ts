@@ -6,33 +6,16 @@ import config from "../config.ts";
 import { User } from "../models/User.ts";
 
 export const login = async (ctx: Context) => {
-  //Check if the request includes a body
-  if (!ctx.request.hasBody) {
-    log.warning("No request body in request");
-    ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
-  }
-
-  const body = ctx.request.body();
-  const bodyValue = await body.value;
-
-  //Check if the request body has Content-Type = application/json
-  if (body.type !== "json") {
-    log.warning("Request body does not have Content-Type = application/json");
-    ctx.throw(
-      Status.BadRequest,
-      "Bad Request, content-type must be application/json",
-    );
-  }
-
   const loginSchema = superstruct.object({
     email: superstruct.string(),
     password: superstruct.string(),
   });
 
   //Validate request body against a schmea
-  superstruct.assert(bodyValue, loginSchema);
+  superstruct.assert(ctx.state.bodyValue, loginSchema);
 
-  const { email, password }: { email: string; password: string } = bodyValue;
+  const { email, password }: { email: string; password: string } =
+    ctx.state.bodyValue;
 
   //Fetch the user from the database
   const result = db.queryEntries<User>(

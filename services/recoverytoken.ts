@@ -6,35 +6,17 @@ import config from "../config.ts";
 import { User } from "../models/User.ts";
 
 export const recoverToken = async (ctx: Context) => {
-  //Check if the request includes a body
-  if (!ctx.request.hasBody) {
-    log.warning("No request body in request");
-    ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
-  }
-
-  const body = ctx.request.body();
-  const bodyValue = await body.value;
-
-  //Check if the request body has Content-Type = application/json
-  if (body.type !== "json") {
-    log.warning("Request body does not have Content-Type = application/json");
-    ctx.throw(
-      Status.BadRequest,
-      "Bad Request, content-type must be application/json",
-    );
-  }
-
   const recoverytokenSchema = superstruct.object({
     token: superstruct.string(),
   });
 
   //Validate request body against a schmea
-  superstruct.assert(bodyValue, recoverytokenSchema);
+  superstruct.assert(ctx.state.bodyValue, recoverytokenSchema);
 
-  const { token }: { token: string } = bodyValue;
+  const { token }: { token: string } = ctx.state.bodyValue;
 
   //Validate Recovery
-  const validatedtoken = await (await jwtHandler).validateJWT(token);
+  const validatedtoken = await jwtHandler.validateJWT(token);
 
   //Fetch the user from the database
   const result = db.queryEntries<User>(

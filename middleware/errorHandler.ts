@@ -1,4 +1,4 @@
-import { Context } from "../deps.ts";
+import { Context, Status } from "../deps.ts";
 import log from "../helpers/log.ts";
 
 export const errorHandler = async (
@@ -9,7 +9,7 @@ export const errorHandler = async (
     await next();
   } catch (err) {
     log.error(err);
-    ctx.response.status = err.status | 400;
+    ctx.response.status = err.status || Status.InternalServerError;
     ctx.response.type = "json";
     ctx.response.body = {
       errors: [

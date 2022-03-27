@@ -256,7 +256,30 @@ Deno.test({
     assertEquals(
       response.status,
       403,
-      "The API should have sent a 403",
+      `The API should have sent a 403 but sent ${response.status}`,
+    );
+  },
+});
+
+Deno.test({
+  name: "API Body Failure",
+  async fn() {
+    const response = await fetch(
+      "http://localhost:3002/api/v1/auth/login",
+      {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    await response.text();
+
+    assertEquals(
+      response.status,
+      400,
+      `The API should have sent a 400 but sent ${response.status}`,
     );
   },
 });

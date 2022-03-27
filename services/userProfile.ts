@@ -7,24 +7,6 @@ import { jwtHandler } from "./mod.ts";
 import { User } from "../models/User.ts";
 
 export const userProfile = async (ctx: Context) => {
-  //Check if the request includes a body
-  if (!ctx.request.hasBody) {
-    log.debug("No request body in request");
-    ctx.throw(Status.BadRequest, "Bad Request, No Request Body");
-  }
-
-  const body = ctx.request.body();
-  const bodyValue = await body.value;
-
-  //Check if the request body has Content-Type = application/json
-  if (body.type !== "json") {
-    log.warning("Request body does not have Content-Type = application/json");
-    ctx.throw(
-      Status.BadRequest,
-      "Bad Request, content-type must be application/json",
-    );
-  }
-
   const emailValidate = () =>
     superstruct.define("email", (value: string) => isEmail(value));
 
@@ -35,9 +17,9 @@ export const userProfile = async (ctx: Context) => {
   });
 
   //Validate request body against a schmea
-  superstruct.assert(bodyValue, updateSchema);
+  superstruct.assert(ctx.state.bodyValue, updateSchema);
 
-  const { name, email, password } = bodyValue;
+  const { name, email, password } = ctx.state.bodyValue;
 
   //Fetch the user from the database
   const result = db.queryEntries<User>(
