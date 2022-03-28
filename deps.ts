@@ -31,14 +31,11 @@ export {
 export { format } from "https://deno.land/std@0.132.0/datetime/mod.ts";
 import * as superstruct from "https://cdn.skypack.dev/superstruct";
 export { superstruct };
-<<<<<<< HEAD
 export * as base64 from "https://deno.land/std@0.132.0/encoding/base64.ts";
-=======
-export * as base64 from "https://deno.land/std@0.126.0/encoding/base64.ts";
 export {
   Confirm,
   Input,
   prompt,
   Select,
-} from "https://deno.land/x/cliffy@v0.20.1/prompt/mod.ts";
->>>>>>> b3e1665 (first pass at setup system)
+} from "https://deno.land/x/cliffy@v0.22.2/prompt/mod.ts";
+export { parseFlags } from "https://deno.land/x/cliffy@v0.22.2/flags/mod.ts";
