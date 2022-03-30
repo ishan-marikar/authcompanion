@@ -1,11 +1,11 @@
 import { Context, Status } from "../deps.ts";
-import { jwtHandler } from "./mod.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { User } from "../models/User.ts";
+import { AppContext } from "../helpers/context.ts";
 
-export const refresh = async (ctx: Context) => {
+export const refresh = async (ctx: Context<AppContext>) => {
   const refreshToken = await ctx.cookies.get("refreshToken");
 
   //Check if the request includes a refresh token
@@ -15,7 +15,7 @@ export const refresh = async (ctx: Context) => {
   }
 
   //Validate the refresh token recieved
-  const validatedToken = await jwtHandler.validateJWT(refreshToken);
+  const validatedToken = await ctx.state.jwt.validateJWT(refreshToken);
 
   if (validatedToken) {
     const result = db.queryEntries<User>(
@@ -37,8 +37,8 @@ export const refresh = async (ctx: Context) => {
       ctx.throw(Status.Forbidden, "User has been disabled");
     }
 
-    const userAccesstoken = await jwtHandler.makeAccesstoken(user);
-    const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
+    const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
+    const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
 
     const date = new Date();
     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days

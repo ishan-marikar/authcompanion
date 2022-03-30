@@ -3,7 +3,6 @@ import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { isEmail } from "../helpers/validations.ts";
-import { jwtHandler } from "./mod.ts";
 import { User } from "../models/User.ts";
 
 export const userProfile = async (ctx: Context) => {
@@ -43,8 +42,8 @@ export const userProfile = async (ctx: Context) => {
 
     const user = userObj[0];
 
-    const userAccesstoken = await jwtHandler.makeAccesstoken(user);
-    const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
+    const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
+    const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
 
     const date = new Date();
     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
@@ -85,8 +84,8 @@ export const userProfile = async (ctx: Context) => {
 
     const user = userObj[0];
 
-    const userAccesstoken = await jwtHandler.makeAccesstoken(user);
-    const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
+    const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
+    const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
 
     const date = new Date();
     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days

@@ -38,4 +38,4 @@ export {
   prompt,
   Select,
 } from "https://deno.land/x/cliffy@v0.22.2/prompt/mod.ts";
-export { parseFlags } from "https://deno.land/x/cliffy@v0.22.2/flags/mod.ts";
+export { Command } from "https://deno.land/x/cliffy@v0.22.2/command/mod.ts";

@@ -1,11 +1,11 @@
 import { compare, Context, Status, superstruct } from "../deps.ts";
-import { jwtHandler } from "./mod.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { User } from "../models/User.ts";
+import { AppContext } from "../helpers/context.ts";
 
-export const login = async (ctx: Context) => {
+export const login = async (ctx: Context<AppContext>) => {
   const loginSchema = superstruct.object({
     email: superstruct.string(),
     password: superstruct.string(),
@@ -14,8 +14,7 @@ export const login = async (ctx: Context) => {
   //Validate request body against a schmea
   superstruct.assert(ctx.state.bodyValue, loginSchema);
 
-  const { email, password }: { email: string; password: string } =
-    ctx.state.bodyValue;
+  const { email, password } = ctx.state.bodyValue;
 
   //Fetch the user from the database
   const result = db.queryEntries<User>(
@@ -45,8 +44,8 @@ export const login = async (ctx: Context) => {
 
   //Check their password is correct, then issue access token
   if (await compare(password, user.password)) {
-    const userAccesstoken = await jwtHandler.makeAccesstoken(user);
-    const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
+    const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
+    const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
 
     const date = new Date();
     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days

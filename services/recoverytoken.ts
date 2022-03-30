@@ -1,11 +1,11 @@
 import { Context, Status, superstruct } from "../deps.ts";
-import { jwtHandler } from "./mod.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { User } from "../models/User.ts";
+import { AppContext } from "../helpers/context.ts";
 
-export const recoverToken = async (ctx: Context) => {
+export const recoverToken = async (ctx: Context<AppContext>) => {
   const recoverytokenSchema = superstruct.object({
     token: superstruct.string(),
   });
@@ -13,10 +13,10 @@ export const recoverToken = async (ctx: Context) => {
   //Validate request body against a schmea
   superstruct.assert(ctx.state.bodyValue, recoverytokenSchema);
 
-  const { token }: { token: string } = ctx.state.bodyValue;
+  const { token } = ctx.state.bodyValue;
 
   //Validate Recovery
-  const validatedtoken = await jwtHandler.validateJWT(token);
+  const validatedtoken = await ctx.state.jwt.validateJWT(token);
 
   //Fetch the user from the database
   const result = db.queryEntries<User>(
@@ -32,8 +32,8 @@ export const recoverToken = async (ctx: Context) => {
 
   const user = result[0];
 
-  const userAccesstoken = await jwtHandler.makeAccesstoken(user);
-  const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
+  const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
+  const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
 
   const date = new Date();
   date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days

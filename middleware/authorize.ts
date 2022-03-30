@@ -1,10 +1,11 @@
 import { Context, Status } from "../deps.ts";
-import { JWTHandler } from "../helpers/JWTHandler.ts";
 import log from "../helpers/log.ts";
+import { AppContext } from "../helpers/context.ts";
 
-const jwtHandler = await JWTHandler.getInstance();
-
-export const authorize = async (ctx: Context, next: () => Promise<unknown>) => {
+export const authorize = async (
+  ctx: Context<AppContext>,
+  next: () => Promise<unknown>,
+) => {
   const authHeader = ctx.request.headers.get("authorization");
 
   if (!authHeader) {
@@ -19,7 +20,7 @@ export const authorize = async (ctx: Context, next: () => Promise<unknown>) => {
     ctx.throw(Status.Unauthorized, "Unauthorized");
   }
 
-  const payload = await jwtHandler.validateJWT(userJWT);
+  const payload = await ctx.state.jwt.validateJWT(userJWT);
 
   ctx.state.JWTclaims = payload;
 

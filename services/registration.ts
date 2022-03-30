@@ -3,10 +3,10 @@ import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import { isEmail } from "../helpers/validations.ts";
 import config from "../config.ts";
-import { jwtHandler } from "./mod.ts";
 import { User } from "../models/User.ts";
+import { AppContext } from "../helpers/context.ts";
 
-export const registration = async (ctx: Context) => {
+export const registration = async (ctx: Context<AppContext>) => {
   const emailValidate = () =>
     superstruct.define("email", (value: string) => isEmail(value));
 
@@ -43,8 +43,8 @@ export const registration = async (ctx: Context) => {
 
   const user = result[0];
 
-  const userAccesstoken = await jwtHandler.makeAccesstoken(user);
-  const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
+  const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
+  const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
 
   const date = new Date();
   date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days

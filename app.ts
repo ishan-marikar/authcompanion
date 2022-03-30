@@ -1,5 +1,6 @@
 import { Application } from "./deps.ts";
 import config from "./config.ts";
+import { AppContext } from "./helpers/context.ts";
 
 // app middleware
 import { notFound } from "./middleware/notFound.ts";
@@ -15,7 +16,7 @@ import clientIndex from "./routes/index.client.ts";
 Deno.flockSync = () => {};
 Deno.funlockSync = () => {};
 
-const app = new Application();
+const app = new Application<AppContext>();
 
 app.use(errorHandler);
 app.use(logger);

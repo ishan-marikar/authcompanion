@@ -8,8 +8,8 @@ import {
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
-import { jwtHandler } from "./mod.ts";
 import { User } from "../models/User.ts";
+import { AppContext } from "../helpers/context.ts";
 
 const connectConfig: ConnectConfigWithAuthentication = {
   hostname: config.SMTPHOSTNAME ? config.SMTPHOSTNAME : "",
@@ -18,7 +18,7 @@ const connectConfig: ConnectConfigWithAuthentication = {
   password: config.SMTPPASSWORD ? config.SMTPPASSWORD : "",
 };
 
-export const accountRecovery = async (ctx: Context) => {
+export const accountRecovery = async (ctx: Context<AppContext>) => {
   const recoverySchema = superstruct.object({
     email: superstruct.string(),
   });
@@ -48,7 +48,7 @@ export const accountRecovery = async (ctx: Context) => {
 
   await client.connect(connectConfig);
 
-  const recoveryToken = await jwtHandler.makeRecoverytoken(user);
+  const recoveryToken = await ctx.state.jwt.makeRecoverytoken(user);
 
   await client.send({
     from: config.FROMADDRESS ?? "no-reply@example.com",

@@ -18,7 +18,7 @@ interface JWTUser {
   email: string;
 }
 
-interface ACPayload extends Payload {
+export interface ACPayload extends Payload {
   id: string;
   name: string;
   email: string;
@@ -42,21 +42,28 @@ export class JWTHandler {
   }
 
   static async importKey(path: string): Promise<CryptoKey> {
-    const readKey = await Deno.readTextFile(path);
-    const binaryDer = base64.decode(readKey).buffer;
+    try {
+      const readKey = await Deno.readTextFile(path);
+      const binaryDer = base64.decode(readKey).buffer;
 
-    const key = await crypto.subtle.importKey(
-      "raw",
-      binaryDer,
-      {
-        name: "HMAC",
-        hash: "SHA-512",
-      },
-      true,
-      ["sign", "verify"],
-    );
+      const key = await crypto.subtle.importKey(
+        "raw",
+        binaryDer,
+        {
+          name: "HMAC",
+          hash: "SHA-512",
+        },
+        true,
+        ["sign", "verify"],
+      );
 
-    return key;
+      return key;
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        throw new Error("Key file not found");
+      }
+      throw new Error("Failed to import key");
+    }
   }
 
   async makeAccesstoken(user: JWTUser) {
