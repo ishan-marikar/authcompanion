@@ -40,7 +40,6 @@ for single factor authentication. With AuthC you can:
 
 Start by downloading AuthCompanion on your preferred platform
 
-
 | Platform    | Download                                                                                                  |
 | ----------- | --------------------------------------------------------------------------------------------------------- |
 | Windows x64 | ![download](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) |
@@ -69,7 +68,8 @@ Make sure to change the working directory
 $ cd authcompanion/
 ```
 
-And start the authcompanion server using the setup wizard if you're starting for the first time
+And install the authcompanion server using the setup wizard if you're starting
+for the first time
 
 ```sh
 $ deno run -A --unstable bin/cmd.ts setup
@@ -91,14 +91,18 @@ Start up the AuthCompanion server by running this
 $ docker-compose up
 ```
 
-Or you could instead use this docker run command:
+Or you could instead build and run locally using docker:
 
 ```sh
-docker run --name authcompanion \
+$ docker build -t authc_server .
+```
+
+```sh
+$ docker run --name authcompanion \
  --env-file .env \
  -v $(pwd)/db/:/app/db/ \
  -p 3002:3002 \
-authcompanion/authcompanion:main
+authc_server
 ```
 
 ---
