@@ -16,7 +16,7 @@
    <a href="https://github.com/pmprosociety/authcompanion/stargazers">
      <img alt="GitHub stars" src="https://img.shields.io/github/stars/pmprosociety/authcompanion">
    </a>
-   <a href="https://github.com/denoland/deno/releases/tag/v1.20.3">
+   <a href="https://github.com/denoland/deno/releases/tag/v1.21.2">
      <img src="https://img.shields.io/badge/deno-v1.20.6-green?logo=deno"/>
    </a>
 

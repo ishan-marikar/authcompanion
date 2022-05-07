@@ -1,4 +1,4 @@
-import { compare, Context, Status, superstruct } from "../deps.ts";
+import { compare, compareSync, Context, Status, superstruct } from "../deps.ts";
 import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
@@ -43,7 +43,7 @@ export const login = async (ctx: Context<AppContext>) => {
   }
 
   //Check their password is correct, then issue access token
-  if (await compare(password, user.password)) {
+  if (compareSync(password, user.password)) {
     const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
     const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
 
