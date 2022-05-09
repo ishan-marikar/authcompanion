@@ -1,11 +1,10 @@
-import { compare, compareSync, Context, Status, superstruct } from "../deps.ts";
-import { db } from "../db/db.ts";
+import { compareSync, Context, Status, superstruct } from "../deps.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { User } from "../models/User.ts";
-import { AppContext } from "../helpers/context.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
-export const login = async (ctx: Context<AppContext>) => {
+export const login = async (ctx: Context<RequestContext, AppContext>) => {
   const loginSchema = superstruct.object({
     email: superstruct.string(),
     password: superstruct.string(),
@@ -17,7 +16,7 @@ export const login = async (ctx: Context<AppContext>) => {
   const { email, password } = ctx.state.bodyValue;
 
   //Fetch the user from the database
-  const result = db.queryEntries<User>(
+  const result = ctx.app.state.db.queryEntries<User>(
     `SELECT uuid, name, email, password, active, created_at, updated_at FROM users WHERE email = $1;`,
     [email],
   );
@@ -44,8 +43,11 @@ export const login = async (ctx: Context<AppContext>) => {
 
   //Check their password is correct, then issue access token
   if (compareSync(password, user.password)) {
-    const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
-    const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
+    const userAccesstoken = await ctx.app.state.jwt.makeAccesstoken(user);
+    const userRefreshtoken = await ctx.app.state.jwt.makeRefreshtoken(
+      ctx.app.state.db,
+      user,
+    );
 
     const date = new Date();
     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days

@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine-1.21.2
+FROM denoland/deno:1.21.2
 
 EXPOSE 3002
 
@@ -12,11 +12,13 @@ RUN deno --unstable cache deps.ts
 # These steps will be re-run upon each file change in your working directory:
 ADD . .
 
-# Generate key used for JWT signing and verifying
-RUN deno run -A --unstable bin/cmd.ts generate-key
+# Compile authcompanion
+RUN deno compile -A --unstable -o authcompanion bin/cmd.ts
 
-# Compile the main app so that it doesn't need to be compiled each startup/entry.
-RUN deno --unstable cache bin/cmd.ts
 
+FROM denoland/deno:1.20.5
+WORKDIR /app
+COPY --from=0 /app/authcompanion ./
+RUN ./authcompanion generate-key
 # Start AuthC API Server
-CMD [ "run", "-A", "--unstable", "bin/cmd.ts" ]
+ENTRYPOINT [ "./authcompanion"]

@@ -1,9 +1,9 @@
 import { Context, Status } from "../deps.ts";
 import log from "../helpers/log.ts";
-import { AppContext } from "../helpers/context.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
 export const bodyCheck = async (
-  ctx: Context<AppContext>,
+  ctx: Context<RequestContext>,
   next: () => Promise<unknown>,
 ) => {
   //Check if the request includes a body

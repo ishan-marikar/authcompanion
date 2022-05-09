@@ -1,12 +1,12 @@
 import {
   base64,
   create,
+  DB,
   getNumericDate,
   Header,
   Payload,
   verify,
 } from "../deps.ts";
-import { db } from "../db/db.ts";
 import log from "./log.ts";
 import config from "../config.ts";
 
@@ -88,7 +88,7 @@ export class JWTHandler {
     return responseObj;
   }
 
-  async makeRefreshtoken(user: JWTUser) {
+  async makeRefreshtoken(db: DB, user: JWTUser) {
     const date = new Date();
     date.setDate(date.getDate() + 30 * 2);
     // const user = result.rows[0];

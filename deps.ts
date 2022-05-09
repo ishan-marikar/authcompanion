@@ -8,11 +8,7 @@ export {
   Status,
 } from "https://deno.land/x/oak@v10.5.1/mod.ts";
 export { DB, SqliteError } from "https://deno.land/x/sqlite@v3.4.0/mod.ts";
-export {
-  compare,
-  compareSync,
-  hash,
-} from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
+export { compareSync, hash } from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 export {
   create,
   decode,

@@ -1,9 +1,9 @@
 import { Context, Status } from "../deps.ts";
 import log from "../helpers/log.ts";
-import { AppContext } from "../helpers/context.ts";
+import { RequestContext } from "../helpers/context.ts";
 
 export const authorize = async (
-  ctx: Context<AppContext>,
+  ctx: Context<RequestContext>,
   next: () => Promise<unknown>,
 ) => {
   const authHeader = ctx.request.headers.get("authorization");

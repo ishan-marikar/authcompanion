@@ -3,6 +3,7 @@ import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { sendTelemetry } from "../helpers/telemetry.ts";
 import { JWTHandler } from "../helpers/JWTHandler.ts";
+import { connectDB } from "../db/db.ts";
 
 const PORT = Number(config.AUTHPORT ?? 3002);
 const controller = new AbortController();
@@ -24,6 +25,7 @@ export async function startServer(): Promise<void> {
 
   sendTelemetry({ event_name: "open_server_event" });
   app.state.jwt = await JWTHandler.getInstance();
+  app.state.db = connectDB();
   const serverlisten = app.listen({ port: PORT, signal });
 
   const sigIntHandler = () => {

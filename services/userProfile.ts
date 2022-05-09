@@ -1,11 +1,11 @@
 import { Context, hash, Status, superstruct } from "../deps.ts";
-import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { isEmail } from "../helpers/validations.ts";
 import { User } from "../models/User.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
-export const userProfile = async (ctx: Context) => {
+export const userProfile = async (ctx: Context<RequestContext, AppContext>) => {
   const emailValidate = () =>
     superstruct.define("email", (value: string) => isEmail(value));
 
@@ -21,7 +21,7 @@ export const userProfile = async (ctx: Context) => {
   const { name, email, password } = ctx.state.bodyValue;
 
   //Fetch the user from the database
-  const result = db.queryEntries<User>(
+  const result = ctx.app.state.db.queryEntries<User>(
     `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE uuid = $1;`,
     [ctx.state.JWTclaims.id],
   );
@@ -35,15 +35,18 @@ export const userProfile = async (ctx: Context) => {
   if (password) {
     const hashpassword = await hash(password);
 
-    const userObj = db.queryEntries<User>(
+    const userObj = ctx.app.state.db.queryEntries<User>(
       `UPDATE users SET name = $1, email = $2, password = $3, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $4 RETURNING uuid, name, email, password, active, created_at, updated_at;`,
       [name, email, hashpassword, ctx.state.JWTclaims.id],
     );
 
     const user = userObj[0];
 
-    const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
-    const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
+    const userAccesstoken = await ctx.app.state.jwt.makeAccesstoken(user);
+    const userRefreshtoken = await ctx.app.state.jwt.makeRefreshtoken(
+      ctx.app.state.db,
+      user,
+    );
 
     const date = new Date();
     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
@@ -77,15 +80,18 @@ export const userProfile = async (ctx: Context) => {
     };
   } else {
     // If the user does not provide a password, just update the user's name and email
-    const userObj = db.queryEntries<User>(
+    const userObj = ctx.state.db.queryEntries<User>(
       `UPDATE users SET name = $1, email = $2, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $3 RETURNING uuid, name, email, password, active, created_at, updated_at;`,
       [name, email, ctx.state.JWTclaims.id],
     );
 
     const user = userObj[0];
 
-    const userAccesstoken = await ctx.state.jwt.makeAccesstoken(user);
-    const userRefreshtoken = await ctx.state.jwt.makeRefreshtoken(user);
+    const userAccesstoken = await ctx.app.state.jwt.makeAccesstoken(user);
+    const userRefreshtoken = await ctx.app.state.jwt.makeRefreshtoken(
+      ctx.app.state.db,
+      user,
+    );
 
     const date = new Date();
     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days

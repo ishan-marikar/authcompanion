@@ -9,6 +9,7 @@ import { recoverToken } from "../services/recoverytoken.ts";
 import { logout } from "../services/logout.ts";
 import { authorize } from "../middleware/authorize.ts";
 import { bodyCheck } from "../middleware/bodyCheck.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
 //API Server Path
 const pathPrefix = "/api/v1/";
@@ -16,8 +17,8 @@ const pathPrefix = "/api/v1/";
 const router = new Router({ prefix: pathPrefix });
 
 //API Server Routes
-router
-  .post("auth/register", bodyCheck, registration)
+const r = router
+  .post("auth/register", registration)
   .post("auth/login", bodyCheck, login)
   .post("auth/refresh", refresh)
   .post("auth/recovery", bodyCheck, accountRecovery)
