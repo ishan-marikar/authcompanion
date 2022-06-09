@@ -31,10 +31,8 @@ export async function setup(): Promise<void> {
   };
 
   const start = await Confirm.prompt({
-    message:
-      `Welcome to AuthCompanion first time setup!  We will help you get started setting up a fresh install.  
-If you are new just go with the defaults for now and consult the documentation if you have any questions.
-proceed?`,
+    message: `Hello 👋 and welcome to AuthCompanion first time setup process. 
+    Ready to proceed?`,
     default: true,
   });
 
@@ -43,7 +41,9 @@ proceed?`,
   }
 
   const keyfile = await Input.prompt({
-    message: "Generating secret key at:",
+    message:
+      `First, we'll generate a secret key used by AuthCompanion to sign and verify tokens. Keep this safe!
+     Input a location for the key file or continue with the default location:`,
     default: `${cwd}/keyfile`,
   });
 
@@ -68,13 +68,16 @@ proceed?`,
   }
 
   const createEnv = await Confirm.prompt({
-    message: `Create new config file at ${cwd}/.env ?`,
+    message:
+      `Next, let's move to create a new configuration file at ${cwd}/.env.
+    Proceed?`,
     default: true,
   });
 
   if (createEnv) {
     const mode = await Select.prompt({
-      message: "Is this for?",
+      message:
+        "Which environment would you like to generate a configuration for:",
       options: ["Production", "Development"],
     });
 
@@ -88,7 +91,10 @@ proceed?`,
     }
 
     console.log(
-      "AuthCompanion setup complete!  The env file has been generated with default values, double check them and then run `./authcompanion` to start the server.",
+      `AuthCompanion server setup is ready!`,
+    );
+    console.log(
+      `Run the command ./authcompanion to start the server. For documenation please reference docs.authcompanion.com`,
     );
   }
 }

@@ -7,7 +7,9 @@ import config from "../config.ts";
 await new Command()
   .name("authcompanion")
   .version("1.0.0-beta.1")
-  .description("Your friendly identity and user management service")
+  .description(
+    "An effortless, token-based user management server - well suited for modern web projects.",
+  )
   .action(async (): Promise<void> => await startServer())
   .command("setup")
   .description("Setup the authcompanion service")

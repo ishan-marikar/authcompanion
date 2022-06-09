@@ -16,7 +16,7 @@ ADD . .
 RUN deno compile -A --unstable -o authcompanion bin/cmd.ts
 
 
-FROM denoland/deno:1.20.5
+FROM denoland/deno:1.22.2
 WORKDIR /app
 COPY --from=0 /app/authcompanion ./
 RUN ./authcompanion generate-key
