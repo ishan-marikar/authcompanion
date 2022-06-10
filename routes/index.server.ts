@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router } from "../deps.ts";
 
 import { login } from "../services/login.ts";
@@ -17,8 +18,8 @@ const pathPrefix = "/api/v1/";
 const router = new Router({ prefix: pathPrefix });
 
 //API Server Routes
-const r = router
-  .post("auth/register", registration)
+router
+  .post("auth/register", bodyCheck, registration)
   .post("auth/login", bodyCheck, login)
   .post("auth/refresh", refresh)
   .post("auth/recovery", bodyCheck, accountRecovery)
