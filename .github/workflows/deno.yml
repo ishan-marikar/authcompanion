@@ -28,7 +28,7 @@ jobs:
       - name: Setup Deno JavaScript Runtime
         uses: denoland/setup-deno@v1
         with:
-          deno-version: '1.19.0'
+          deno-version: '1.22.2'
 
       - name: Checkout Repo
         uses: actions/checkout@v2

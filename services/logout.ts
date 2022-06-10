@@ -5,7 +5,7 @@ import { AppContext, RequestContext } from "../helpers/context.ts";
 
 export const logout = (ctx: Context<RequestContext, AppContext>) => {
   //Fetch the user from the database
-  const result = ctx.state.db.queryEntries(
+  const result = ctx.app.state.db.queryEntries(
     `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE uuid = $1;`,
     [ctx.state.JWTclaims.id],
   );

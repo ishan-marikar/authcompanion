@@ -20,7 +20,7 @@ export const authorize = async (
     ctx.throw(Status.Unauthorized, "Unauthorized");
   }
 
-  const payload = await ctx.state.jwt.validateJWT(userJWT);
+  const payload = await ctx.app.state.jwt.validateJWT(userJWT);
 
   ctx.state.JWTclaims = payload;
 

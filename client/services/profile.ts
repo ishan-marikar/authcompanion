@@ -7,7 +7,7 @@ export const profile = async (ctx: Context<AppContext>) => {
     const recoveryToken = ctx.request.url.searchParams.get("token");
 
     if (recoveryToken) {
-      await ctx.state.jwt.validateJWT(recoveryToken);
+      await ctx.app.state.jwt.validateJWT(recoveryToken);
     }
 
     const body = await Deno.readTextFile(
