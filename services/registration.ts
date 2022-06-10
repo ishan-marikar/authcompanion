@@ -1,4 +1,4 @@
-import { Context, hash, Status, superstruct } from "../deps.ts";
+import { Context, hashSync, Status, superstruct } from "../deps.ts";
 import log from "../helpers/log.ts";
 import { isEmail } from "../helpers/validations.ts";
 import config from "../config.ts";
@@ -35,7 +35,7 @@ export async function registration(
     ctx.throw(Status.BadRequest, "Bad Request");
   }
 
-  const hashpassword = await hash(password);
+  const hashpassword = hashSync(password);
   const uuid = crypto.randomUUID();
   const jwtid = crypto.randomUUID();
 

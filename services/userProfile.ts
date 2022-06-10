@@ -1,4 +1,4 @@
-import { Context, hash, Status, superstruct } from "../deps.ts";
+import { Context, hashSync, Status, superstruct } from "../deps.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
 import { isEmail } from "../helpers/validations.ts";
@@ -33,7 +33,7 @@ export const userProfile = async (ctx: Context<RequestContext, AppContext>) => {
   }
 
   if (password) {
-    const hashpassword = await hash(password);
+    const hashpassword = hashSync(password);
 
     const userObj = ctx.app.state.db.queryEntries<User>(
       `UPDATE users SET name = $1, email = $2, password = $3, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $4 RETURNING uuid, name, email, password, active, created_at, updated_at;`,

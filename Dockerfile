@@ -13,7 +13,7 @@ RUN deno --unstable cache deps.ts
 ADD . .
 
 # Compile authcompanion
-RUN deno compile -A --unstable -o authcompanion bin/cmd.ts
+RUN deno compile --output authcompanion -A --unstable bin/cmd.ts
 
 
 FROM denoland/deno:1.22.2
