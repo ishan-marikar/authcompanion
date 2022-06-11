@@ -15,10 +15,9 @@ ADD . .
 # Compile authcompanion
 RUN deno compile --output authcompanion -A --unstable bin/cmd.ts
 
-
 FROM denoland/deno:1.22.2
 WORKDIR /app
 COPY --from=0 /app/authcompanion ./
-RUN ./authcompanion generate-key
+
 # Start AuthC API Server
 ENTRYPOINT [ "./authcompanion"]

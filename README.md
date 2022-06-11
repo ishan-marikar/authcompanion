@@ -32,27 +32,49 @@
 AuthCompanion aims to satisfy the most common identity and user management needs
 for single factor authentication. With AuthC you can:
 
-- Securely handle user registration, login, logout, and account recovery.
+- Confidently store your web application user accounts
+- Securely handle the registration, login, logout, and account recovery of your
+  applicaiton users
 - Generate and validate [JWTs](https://jwt.io/introduction), a token used for
-  authenticating users into your application APIs.
+  authenticating users into your application's backend APIs
 
 ## Get Started
 
 Start by downloading AuthCompanion on your preferred platform
 
-| Platform    | Download                                                                                                  |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
-| Windows x64 | ![download](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) |
-| MacOS x64   | ![download](https://img.shields.io/badge/macOS-5F85CE?style=for-the-badge&logo=apple&logoColor=white)     |
-| MacOS ARM   | ![download](https://img.shields.io/badge/macOS_ARM-999999?style=for-the-badge&logo=apple&logoColor=white) |
-| Linux x64   | ![download](https://img.shields.io/badge/Linux-EBA201?style=for-the-badge&logo=linux&logoColor=white)     |
+| Platform    | Download                                                                                                                                                                      |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows x64 | [![download](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://download.authcompanion.com/Windows/x64/authcompanion.exe) |
+| MacOS x64   | [![download](https://img.shields.io/badge/macOS-5F85CE?style=for-the-badge&logo=apple&logoColor=white)](https://download.authcompanion.com/MacOS/x64/authcompanion)           |
+| MacOS ARM   | [![download](https://img.shields.io/badge/macOS_ARM-999999?style=for-the-badge&logo=apple&logoColor=white)](https://download.authcompanion.com/MacOS/ARM/authcompanion)       |
+| Linux x64   | [![download](https://img.shields.io/badge/Linux-EBA201?style=for-the-badge&logo=linux&logoColor=white)](https://download.authcompanion.com/Linux/x64/authcompanion)           |
 
 To run AuthCompanion for the first time, begin with the setup wizard and follow
-the prompts to start the server
+the prompts to start the server. Use this command
 
 ```sh
 $ ./authcompanion setup
 ```
+
+### Note on MacOS
+
+To ensure the executable can run on MacOS, ensure the program has the right
+permission by running this command.
+
+```sh
+$ chmod +x /yourpath/to/authcompanion
+```
+
+Next, open the app using the command below and click **Cancel** in the
+confirmation dialog.
+
+```sh
+$ ./authcompanion setup
+```
+
+Head over to **System Preferences** and under **Security & Privacy** settings
+and make sure to **Allow** the application. Then repeat the ./authcompanion
+setup command to continue with the setup wizard.
 
 ## From Source
 
@@ -75,6 +97,12 @@ for the first time
 $ deno run -A --unstable bin/cmd.ts setup
 ```
 
+Use the following to then start the server once setup is complete
+
+```sh
+$ deno run -A --unstable  bin/cmd.ts
+```
+
 ### With Docker
 
 Make sure you have the respository cloned as in the previous step. If you have
@@ -82,6 +110,10 @@ it cloned already you can skip this step
 
 ```sh
 $ git clone https://github.com/authcompanion/authcompanion.git
+```
+
+```sh
+$ deno run -A --unstable bin/cmd.ts setup
 ```
 
 Start up the AuthCompanion server by running this
@@ -93,9 +125,19 @@ $ docker-compose up
 
 Or you could instead build and run locally using docker:
 
+Setup the server if you haven't already
+
+```sh
+$ deno run -A --unstable bin/cmd.ts setup
+```
+
+Build the AuthC server image:
+
 ```sh
 $ docker build -t authc_server .
 ```
+
+Start the server:
 
 ```sh
 $ docker run --name authcompanion \
