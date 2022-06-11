@@ -40,7 +40,7 @@ jobs:
         run: deno run -A --unstable bin/cmd.ts generate-key
 
       - name: Setup DB
-        run: sqlite3 ./db/authcompanion_users.db "VACUUM;"
+        run: sqlite3 ./authcompanion_users.db "VACUUM;"
 
       - name: Spin up AuthC Docker
         run: docker-compose up -d
