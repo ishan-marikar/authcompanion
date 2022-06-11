@@ -58,8 +58,7 @@ $ ./authcompanion setup
 
 ### Note on MacOS
 
-To ensure the executable can run on MacOS, ensure the program has the right
-permission.
+To ensure the executable can run on MacOS, add the appropriate permission
 
 ```sh
 $ chmod +x /yourpath/to/authcompanion
