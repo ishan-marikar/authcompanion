@@ -12,8 +12,8 @@ export async function setup(): Promise<void> {
     origin: "http://localhost:3001",
     secure: false,
     recovery_redirect_url: "http://localhost:3001/recover/",
-    db_uri: `${cwd}/authcompanion_users.db`,
-    key_path: `${cwd}/keyfile`,
+    db_uri: `./authcompanion_users.db`,
+    key_path: `./keyfile`,
     client_mode: true,
     client_origin: "/client/v1/home",
     smtp: {
@@ -44,7 +44,7 @@ export async function setup(): Promise<void> {
     message:
       `First, we'll generate a secret key used by AuthCompanion to sign and verify tokens. Keep this safe!
      Input a location for the key file or continue with the default location:`,
-    default: `${cwd}/keyfile`,
+    default: `./keyfile`,
   });
 
   defaultDev.key_path = keyfile;

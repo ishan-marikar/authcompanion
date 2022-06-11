@@ -37,7 +37,7 @@ jobs:
         run: cp env.example .env
 
       - name: Setup AuthC Keyfile
-        run: deno run -A --unstable  bin/cmd.ts generate-key
+        run: deno run -A --unstable bin/cmd.ts generate-key
 
       - name: Setup DB
         run: sqlite3 ./db/authcompanion_users.db "VACUUM;"
