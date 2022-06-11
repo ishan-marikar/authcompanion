@@ -59,7 +59,7 @@ $ ./authcompanion setup
 ### Note on MacOS
 
 To ensure the executable can run on MacOS, ensure the program has the right
-permission by running this command.
+permission.
 
 ```sh
 $ chmod +x /yourpath/to/authcompanion
@@ -90,8 +90,8 @@ Make sure to change the working directory
 $ cd authcompanion/
 ```
 
-And install the authcompanion server using the setup wizard if you're starting
-for the first time
+And setup the authcompanion server using the setup wizard if you're starting for
+the first time
 
 ```sh
 $ deno run -A --unstable bin/cmd.ts setup
@@ -142,7 +142,6 @@ Start the server:
 ```sh
 $ docker run --name authcompanion \
  --env-file .env \
- -v $(pwd)/db/:/app/db/ \
  -p 3002:3002 \
 authc_server
 ```
