@@ -1,15 +1,13 @@
 import { Context, Status } from "../../deps.ts";
-import { JWTHandler } from "../../helpers/JWTHandler.ts";
 import log from "../../helpers/log.ts";
+import { AppContext } from "../../helpers/context.ts";
 
-const jwtHandler = await JWTHandler.getInstance();
-
-export const profile = async (ctx: Context) => {
+export const profile = async (ctx: Context<AppContext>) => {
   try {
     const recoveryToken = ctx.request.url.searchParams.get("token");
 
     if (recoveryToken) {
-      await jwtHandler.validateJWT(recoveryToken);
+      await ctx.app.state.jwt.validateJWT(recoveryToken);
     }
 
     const body = await Deno.readTextFile(

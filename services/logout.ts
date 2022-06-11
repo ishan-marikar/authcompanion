@@ -1,11 +1,11 @@
 import { Context, Status } from "../deps.ts";
-import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import { User } from "../models/User.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
-export const logout = (ctx: Context) => {
+export const logout = (ctx: Context<RequestContext, AppContext>) => {
   //Fetch the user from the database
-  const result = db.queryEntries(
+  const result = ctx.app.state.db.queryEntries(
     `SELECT uuid, name, email, active, created_at, updated_at FROM users WHERE uuid = $1;`,
     [ctx.state.JWTclaims.id],
   );
@@ -20,7 +20,7 @@ export const logout = (ctx: Context) => {
   }
 
   //Logout user by removing his refresh token in database
-  const userObj = db.queryEntries<User>(
+  const userObj = ctx.app.state.db.queryEntries<User>(
     `UPDATE users SET jwt_id = '', updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE uuid = $1 RETURNING uuid, name, email;`,
     [ctx.state.JWTclaims.id],
   );

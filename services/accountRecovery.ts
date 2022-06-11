@@ -5,11 +5,10 @@ import {
   Status,
   superstruct,
 } from "../deps.ts";
-import { db } from "../db/db.ts";
 import log from "../helpers/log.ts";
 import config from "../config.ts";
-import { jwtHandler } from "./mod.ts";
 import { User } from "../models/User.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
 const connectConfig: ConnectConfigWithAuthentication = {
   hostname: config.SMTPHOSTNAME ? config.SMTPHOSTNAME : "",
@@ -18,7 +17,9 @@ const connectConfig: ConnectConfigWithAuthentication = {
   password: config.SMTPPASSWORD ? config.SMTPPASSWORD : "",
 };
 
-export const accountRecovery = async (ctx: Context) => {
+export const accountRecovery = async (
+  ctx: Context<RequestContext, AppContext>,
+) => {
   const recoverySchema = superstruct.object({
     email: superstruct.string(),
   });
@@ -29,7 +30,7 @@ export const accountRecovery = async (ctx: Context) => {
   const { email } = ctx.state.bodyValue;
 
   //Fetch the user from the database
-  const result = db.queryEntries<User>(
+  const result = ctx.app.state.db.queryEntries<User>(
     `SELECT uuid, name, email, password, active, created_at, updated_at FROM users WHERE email = $1;`,
     [email],
   );
@@ -48,7 +49,7 @@ export const accountRecovery = async (ctx: Context) => {
 
   await client.connect(connectConfig);
 
-  const recoveryToken = await jwtHandler.makeRecoverytoken(user);
+  const recoveryToken = await ctx.app.state.jwt.makeRecoverytoken(user);
 
   await client.send({
     from: config.FROMADDRESS ?? "no-reply@example.com",

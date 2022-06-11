@@ -16,13 +16,13 @@
    <a href="https://github.com/pmprosociety/authcompanion/stargazers">
      <img alt="GitHub stars" src="https://img.shields.io/github/stars/pmprosociety/authcompanion">
    </a>
-   <a href="https://github.com/denoland/deno/releases/tag/v1.20.3">
-     <img src="https://img.shields.io/badge/deno-v1.20.3-green?logo=deno"/>
+   <a href="https://github.com/denoland/deno/releases/tag/v1.21.2">
+     <img src="https://img.shields.io/badge/deno-v1.22.2-green?logo=deno"/>
    </a>
 
 </div>
 <br />
-<p align="center">  <a href="https://docs.authcompanion.com/"> Click Here for AuthCompanion's Documentation Site </a>
+<p align="center">  <a href="https://docs.authcompanion.com/"> Read the AuthCompanion Documentation</a>
 </p>
 
 ---
@@ -30,31 +30,89 @@
 ## Introduction
 
 AuthCompanion aims to satisfy the most common identity and user management needs
-for single factor authentication. It can:
+for single factor authentication. With AuthC you can:
 
-- Securely handle user registration, login, logout, and account recovery.
-- Generate and validate [JWTs](https://jwt.io/introduction), a token designed
-  for authenticating users into your application APIs.
+- Confidently store your web application user accounts
+- Securely handle the registration, login, logout, and account recovery of your
+  applicaiton users
+- Generate and validate [JWTs](https://jwt.io/introduction), a token used for
+  authenticating users into your application's backend APIs
 
 ## Get Started
 
-Start by downloading the source code or use git, to clone this repository
+Start by downloading AuthCompanion on your preferred platform
+
+| Platform    | Download                                                                                                                                                                      |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows x64 | [![download](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://download.authcompanion.com/Windows/x64/authcompanion.exe) |
+| MacOS x64   | [![download](https://img.shields.io/badge/macOS-5F85CE?style=for-the-badge&logo=apple&logoColor=white)](https://download.authcompanion.com/MacOS/x64/authcompanion)           |
+| MacOS ARM   | [![download](https://img.shields.io/badge/macOS_ARM-999999?style=for-the-badge&logo=apple&logoColor=white)](https://download.authcompanion.com/MacOS/ARM/authcompanion)       |
+| Linux x64   | [![download](https://img.shields.io/badge/Linux-EBA201?style=for-the-badge&logo=linux&logoColor=white)](https://download.authcompanion.com/Linux/x64/authcompanion)           |
+
+To run AuthCompanion for the first time, begin with the setup wizard and follow
+the prompts to start the server. Use this command
+
+```sh
+$ ./authcompanion setup
+```
+
+### Note on MacOS
+
+To ensure the executable can run on MacOS, add the appropriate permission
+
+```sh
+$ chmod +x /yourpath/to/authcompanion
+```
+
+Next, open the app using the command below and click **Cancel** in the
+confirmation dialog.
+
+```sh
+$ ./authcompanion setup
+```
+
+Head over to **System Preferences** and under **Security & Privacy** settings
+and make sure to **Allow** the application. Then repeat the ./authcompanion
+setup command to continue with the setup wizard.
+
+## From Source
+
+Downloading the source code or clone this repository
 
 ```sh
 $ git clone https://github.com/authcompanion/authcompanion.git
 ```
 
-Change the current working directory to authcompanion
+Make sure to change the working directory
 
 ```sh
 $ cd authcompanion/
 ```
 
-Copy the example config file (see below). Take a look through the values in the
-.env file and keep the default settings if you're just trying things out
+And setup the authcompanion server using the setup wizard if you're starting for
+the first time
 
 ```sh
-$ cp env.example .env
+$ deno run -A --unstable bin/cmd.ts setup
+```
+
+Use the following to then start the server once setup is complete
+
+```sh
+$ deno run -A --unstable  bin/cmd.ts
+```
+
+### With Docker
+
+Make sure you have the respository cloned as in the previous step. If you have
+it cloned already you can skip this step
+
+```sh
+$ git clone https://github.com/authcompanion/authcompanion.git
+```
+
+```sh
+$ deno run -A --unstable bin/cmd.ts setup
 ```
 
 Start up the AuthCompanion server by running this
@@ -64,15 +122,67 @@ Start up the AuthCompanion server by running this
 $ docker-compose up
 ```
 
-Or you could instead use this docker run command:
+Or you could instead build and run locally using docker:
+
+Setup the server if you haven't already
 
 ```sh
-docker run --name authcompanion \
- --env-file .env \
- -v $(pwd)/db/:/app/db/ \
- -p 3002:3002 \
-authcompanion/authcompanion:main
+$ deno run -A --unstable bin/cmd.ts setup
 ```
+
+Build the AuthC server image:
+
+```sh
+$ docker build -t authc_server .
+```
+
+Start the server:
+
+```sh
+$ docker run --name authcompanion \
+ --env-file .env \
+ -p 3002:3002 \
+authc_server
+```
+
+---
+
+## Features
+
+- [x] **Web Forms for User Auth:** Use pre-built and customizable web forms for
+      your application users to: log in with their credentials, register an
+      account, update their profile, and issue forgotten passwords.
+
+- [x] **Manage User Profiles and JWTs:** Update the password and profile
+      information of your users - all account information is stored in a SQLite
+      database. Easily manage the life-cycle of your user's JWT used for
+      authentication.
+
+- [x] **User Account Recovery:** Restore a user's access to their account using
+      the **Forgot Password** flow which sends a special link via email for
+      helping users quickly recover their account.
+
+The default AuthC server configuration strives to be reasonable and sane for
+getting started with user authentication easily.
+
+### Web Forms for Authentication
+
+The web forms for login, registration and forgot password are built using
+[Vue.js](https://v3.vuejs.org/) and [Tailwindcss](https://tailwindcss.com/) -
+making them easily customizable for your specific branding and auth needs (no
+build step required, restart the AuthC to view your code changes). 👍
+
+After successful login or registration using the web forms, the user's Access
+Token (a JWT) is made available for developers to use when authenticating a user
+into your web application APIs.
+
+|             Login Screen              |            Registration Screen             |
+| :-----------------------------------: | :----------------------------------------: |
+| ![Login](./.github/public/login.png)  | ![Register](./.github/public/register.png) |
+| http://localhost:3002/client/v1/login |  http://localhost:3002/client/v1/register  |
+
+Other helpful web forms include: the profile page, available at `/profile` and
+the forgot password page at `/recovery`.
 
 ---
 
@@ -96,46 +206,9 @@ this web form: http://localhost:3002/client/v1/login.
 Lastly, check out the [Authentication API](#authentication-api) for information
 on how you can manage user authentication.
 
-## Features
-
-- [x] **Web Forms for User Auth:** Use pre-built and customizable web forms for
-      your application users to: log in with their credentials, register an
-      account, update their profile, and issue forgotten passwords.
-
-- [x] **Manage User Profiles and JWTs:** Update the password and profile
-      information of your users - all account information is stored in a SQLite
-      database. Easily manage the life-cycle of your user's JWT used for
-      authentication.
-
-- [x] **User Account Recovery:** Restore a user's access to their account using
-      the **Forgot Password** flow which sends a special link via email for
-      helping users quickly recover their account.
-
-The default AuthC server configuration strives to be reasonable and sane for
-getting started with user authentication easily.
-
-## Web Forms for Authentication
-
-The web forms for login, registration and forgot password are built using
-[Vue.js](https://v3.vuejs.org/) and [Tailwindcss](https://tailwindcss.com/) -
-making them easily customizable for your specific branding and auth needs (no
-build step required, restart the AuthC to view your code changes). 👍
-
-After successful login or registration using the web forms, the user's Access
-Token (a JWT) is made available for developers to use when authenticating a user
-into your web application APIs.
-
-|             Login Screen              |            Registration Screen             |
-| :-----------------------------------: | :----------------------------------------: |
-| ![Login](./.github/public/login.png)  | ![Register](./.github/public/register.png) |
-| http://localhost:3002/client/v1/login |  http://localhost:3002/client/v1/register  |
-
-Other helpful web forms include: the profile page, available at `/profile` and
-the forgot password page at `/recovery`.
-
 ---
 
-## Authentication API
+## Authentication API Docs
 
 The RESTful Authentication API powers the web forms and can be used to build
 your own authentication flows.

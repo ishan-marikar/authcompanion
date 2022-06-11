@@ -1,5 +1,7 @@
-import { assertEquals } from "https://deno.land/std@0.132.0/testing/asserts.ts";
-import { db } from "../db/db.ts";
+import { assertEquals } from "https://deno.land/std@0.138.0/testing/asserts.ts";
+import { connectDB } from "../db/db.ts";
+
+const db = connectDB();
 
 function purgeTestData() {
   db.query(

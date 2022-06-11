@@ -1,12 +1,13 @@
-import { Context, hash, Status, superstruct } from "../deps.ts";
-import { db } from "../db/db.ts";
+import { Context, hashSync, Status, superstruct } from "../deps.ts";
 import log from "../helpers/log.ts";
 import { isEmail } from "../helpers/validations.ts";
 import config from "../config.ts";
-import { jwtHandler } from "./mod.ts";
 import { User } from "../models/User.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
-export const registration = async (ctx: Context) => {
+export async function registration(
+  ctx: Context<RequestContext, AppContext>,
+) {
   const emailValidate = () =>
     superstruct.define("email", (value: string) => isEmail(value));
 
@@ -21,9 +22,12 @@ export const registration = async (ctx: Context) => {
 
   const { name, email, password } = ctx.state.bodyValue;
 
-  const emailResult = db.query(`SELECT email FROM users WHERE email = $1;`, [
-    email,
-  ]);
+  const emailResult = ctx.app.state.db.query(
+    `SELECT email FROM users WHERE email = $1;`,
+    [
+      email,
+    ],
+  );
 
   //Check if the user exists in the database, before creating a new user
   if (emailResult.length) {
@@ -31,20 +35,23 @@ export const registration = async (ctx: Context) => {
     ctx.throw(Status.BadRequest, "Bad Request");
   }
 
-  const hashpassword = await hash(password);
+  const hashpassword = hashSync(password);
   const uuid = crypto.randomUUID();
   const jwtid = crypto.randomUUID();
 
   //Create the new user in the database
-  const result = db.queryEntries<User>(
+  const result = ctx.app.state.db.queryEntries<User>(
     `INSERT INTO users (uuid, name, email, password, active, jwt_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, strftime('%Y-%m-%dT%H:%M:%fZ','now'), strftime('%Y-%m-%dT%H:%M:%fZ','now')) RETURNING uuid, name, email, jwt_id, created_at, updated_at;`,
     [uuid, name, email, hashpassword, "1", jwtid],
   );
 
   const user = result[0];
 
-  const userAccesstoken = await jwtHandler.makeAccesstoken(user);
-  const userRefreshtoken = await jwtHandler.makeRefreshtoken(user);
+  const userAccesstoken = await ctx.app.state.jwt.makeAccesstoken(user);
+  const userRefreshtoken = await ctx.app.state.jwt.makeRefreshtoken(
+    ctx.app.state.db,
+    user,
+  );
 
   const date = new Date();
   date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000); // TODO: Make configurable now, set to 7 days
@@ -74,4 +81,4 @@ export const registration = async (ctx: Context) => {
       attributes: userAttributes,
     },
   };
-};
+}

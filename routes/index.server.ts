@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router } from "../deps.ts";
 
 import { login } from "../services/login.ts";
@@ -9,6 +10,7 @@ import { recoverToken } from "../services/recoverytoken.ts";
 import { logout } from "../services/logout.ts";
 import { authorize } from "../middleware/authorize.ts";
 import { bodyCheck } from "../middleware/bodyCheck.ts";
+import { AppContext, RequestContext } from "../helpers/context.ts";
 
 //API Server Path
 const pathPrefix = "/api/v1/";
